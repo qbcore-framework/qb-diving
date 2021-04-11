@@ -79,7 +79,7 @@ Citizen.CreateThread(function()
                                 DrawMarker(32, CoralLocation.coords.x, CoralLocation.coords.y, CoralLocation.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 1.0, 0.4, 255, 223, 0, 255, true, false, false, false, false, false, false)
                                 if CoralDistance <= 1.5 then
                                     DrawText3D(CoralLocation.coords.x, CoralLocation.coords.y, CoralLocation.coords.z, '[E] Collecting coral')
-                                    if IsControlJustPressed(0, Keys["E"]) then
+                                    if IsControlJustPressed(0, 38) then
                                         -- loadAnimDict("pickup_object")
                                         local times = math.random(2, 5)
                                         CallCops()

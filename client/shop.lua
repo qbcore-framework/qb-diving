@@ -20,7 +20,7 @@ Citizen.CreateThread(function()
                         
                         DrawText3D(v["coords"]["x"], v["coords"]["y"], v["coords"]["z"] - 0.1, '~g~G~w~ - Selling Coral')
                         
-                            if IsControlJustPressed(0, Keys["G"]) then
+                            if IsControlJustPressed(0, 47) then
                     
                                     TaskStartScenarioInPlace(PlayerPedId(), "WORLD_HUMAN_STAND_IMPATIENT", 0, true)
                                     QBCore.Functions.Progressbar("sell_coral_items", "Check Pockets To Sell Coral", math.random(2000, 4000), false, true, {}, {}, {}, {}, function() -- Done

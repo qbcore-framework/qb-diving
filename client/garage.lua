@@ -33,7 +33,7 @@ Citizen.CreateThread(function()
                     DrawMarker(2, QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
                     if #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z)) < 1.5 then
                         QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, "~g~E~w~ - Take Boat")
-                        if IsControlJustReleased(0, Keys["E"]) then
+                        if IsControlJustReleased(0, 38) then
                             local coords = QBBoatshop.PoliceBoatSpawn
                             QBCore.Functions.SpawnVehicle("pboot", function(veh)
                                 SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
@@ -66,7 +66,7 @@ Citizen.CreateThread(function()
                     DrawMarker(2, QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
                     if #(pos - vector3(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z)) < 1.5 then
                         QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z, "~g~E~w~ - Take Boat")
-                        if IsControlJustReleased(0, Keys["E"]) then
+                        if IsControlJustReleased(0, 38) then
                             local coords = QBBoatshop.PoliceBoatSpawn2
                             QBCore.Functions.SpawnVehicle("pboot", function(veh)
                                 SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
@@ -110,7 +110,7 @@ Citizen.CreateThread(function()
                     if PutDistance < 2 then
                         if inBoat then
                             DrawText3D(v.coords.put.x, v.coords.put.y, v.coords.put.z, '~g~E~w~ - Remove boat')
-                            if IsControlJustPressed(0, Keys["E"]) then
+                            if IsControlJustPressed(0, 38) then
                                 RemoveVehicle()
                             end
                         end
@@ -125,7 +125,7 @@ Citizen.CreateThread(function()
                             CloseMenu()
                             PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
                             CurrentDock = nil
-                        elseif IsControlJustPressed(0, Keys["E"]) and Menu.hidden then
+                        elseif IsControlJustPressed(0, 38) and Menu.hidden then
                             MenuGarage()
                             Menu.hidden = not Menu.hidden
                             CurrentDock = k
@@ -158,7 +158,7 @@ Citizen.CreateThread(function()
                             CloseMenu()
                             PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
                             CurrentDock = nil
-                        elseif IsControlJustPressed(0, Keys["E"]) and Menu.hidden then
+                        elseif IsControlJustPressed(0, 38) and Menu.hidden then
                             MenuBoatDepot()
                             Menu.hidden = not Menu.hidden
                             CurrentDock = k
