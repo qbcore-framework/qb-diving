@@ -28,7 +28,7 @@ Citizen.CreateThread(function()
         if isLoggedIn then
             local pos = GetEntityCoords(PlayerPedId())
             if PlayerJob.name == "police" then
-                local dist = #(pos - QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z))
+                local dist = #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z))
                 if dist < 10 then
                     DrawMarker(2, QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
                     if #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z)) < 1.5 then
@@ -141,12 +141,12 @@ Citizen.CreateThread(function()
         end
 
         for k, v in pairs(QBBoatshop.Depots) do
-            local TakeDistance = #(Pos - v.coords.take.x, v.coords.take.y, v.coords.take.z))
+            local TakeDistance = #(Pos - vector3(v.coords.take.x, v.coords.take.y, v.coords.take.z))
 
             if TakeDistance < 50 then
                 ClosestDock = k
                 inRange = true
-                PutDistance = #(Pos - v.coords.put.x, v.coords.put.y, v.coords.put.z))
+                PutDistance = #(Pos - vector3(v.coords.put.x, v.coords.put.y, v.coords.put.z))
 
                 local inBoat = IsPedInAnyBoat(Ped)
 
