@@ -29,69 +29,69 @@ QBBoatshop.PoliceBoatSpawn2 = {
 
 QBBoatshop.Docks = {
     ["lsymc"] = {
-        label = "Pier 45",
+        label = "LSYMC Boathouse",
         coords = {
             take = {
-                x = 739.79,
-                y = -17.23,
-                z = 1.48,
+                x = -794.66,
+                y = -1510.83,
+                z = 1.59,
             },
             put = {
-                x = 750.50,
-                y = -9.45,
-                z = 0.10,
-                h = 345.90,
+                x = -793.58,
+                y = -1501.4,
+                z = 0.12,
+                h = 111.5,
             }
         }
     },
     ["paletto"] = {
-        label = "Golden Pier",
+        label = "Paleto Boathouse",
         coords = {
             take = {
-                x = -454.79,
-                y = 441.73,
-                z = 1.51,
+                x = -277.46,
+                y = 6637.2,
+                z = 7.48,
             },
             put = {
-                x = -466.23,
-                y = 438.15,
-                z = 0.01,
-                h = 98.95,
+                x = -289.2,
+                y = 6637.96,
+                z = 1.01,
+                h = 45.5,
             }
         }
-    }
-    -- ["millars"] = {
-        -- label = "Millars Boathouse",
-        -- coords = {
-            -- take = {
-                -- x = 1299.24,
-                -- y = 4216.69,
-                -- z = 33.9,
-            -- },
-            -- put = {
-                -- x = 1297.82,
-                -- y = 4209.61,
-                -- z = 30.12,
-                -- h = 253.5,
-            -- }
-        -- }
-    -- },
+    },
+    ["millars"] = {
+        label = "Millars Boathouse",
+        coords = {
+            take = {
+                x = 1299.24,
+                y = 4216.69,
+                z = 33.9,
+            },
+            put = {
+                x = 1297.82,
+                y = 4209.61,
+                z = 30.12,
+                h = 253.5,
+            }
+        }
+    },
 }
 
 QBBoatshop.Depots = {
     [1] = {
-        label = "Golden Pier Depot",
+        label = "LSYMC Depot",
         coords = {
             take = {
-                x = -437.35,
-                y = 447.33,
-                z = 1.51,
+                x = -772.98,
+                y = -1430.76,
+                z = 1.59,
             },
             put = {
-                x = -439.92,
-                y = 437.06,
-                z = 0.01,
-                h = 263.70,
+                x = -729.77,
+                y = -1355.49,
+                z = 1.19,
+                h = 142.5,
             }
         }
     },
@@ -103,15 +103,15 @@ QBBoatshop.Locations = {
             ["boatModel"] = "seashark",
             ["coords"] = {
                 ["boat"] = {
-                    ["x"] = -462.82,
-                    ["y"] = 419.33,
-                    ["z"] = 0.01,
-                    ["h"] = 91.75
+                    ["x"] = -727.05,
+                    ["y"] = -1326.59,
+                    ["z"] = 1.06,
+                    ["h"] = 229.5
                 },
                 ["buy"] = {
-                    ["x"] = -455.65,
-                    ["y"] = 419.27,
-                    ["z"] = 1.51,
+                    ["x"] = -723.3,
+                    ["y"] = -1323.61,
+                    ["z"] = 1.59,
                 }
             },
             ["inUse"] = false
@@ -120,15 +120,15 @@ QBBoatshop.Locations = {
             ["boatModel"] = "dinghy",
             ["coords"] = {
                 ["boat"] = {
-                    ["x"] = -464.13,
-                    ["y"] = 403.16,
-                    ["z"] = 0.01,
-                    ["h"] = 87.28
+                    ["x"] = -732.84,
+                    ["y"] = -1333.5,
+                    ["z"] = 1.59,
+                    ["h"] = 229.5
                 },
                 ["buy"] = {
-                    ["x"] = -455.58,
-                    ["y"] = 405.06,
-                    ["z"] = 1.51,
+                    ["x"] = -729.19,
+                    ["y"] = -1330.58,
+                    ["z"] = 1.67,
                 },
             },
             ["inUse"] = false
@@ -137,15 +137,15 @@ QBBoatshop.Locations = {
             ["boatModel"] = "speeder",
             ["coords"] = {
                 ["boat"] = {
-                    ["x"] = -446.75,
-                    ["y"] = 417.85,
-                    ["z"] = 0.01,
-                    ["h"] = 268.35
+                    ["x"] = -737.84,
+                    ["y"] = -1340.83,
+                    ["z"] = 0.79,
+                    ["h"] = 229.5
                 },
                 ["buy"] = {
-                    ["x"] = -453.37,
-                    ["y"] = 418.89,
-                    ["z"] = 1.51,
+                    ["x"] = -734.98,
+                    ["y"] = -1337.42,
+                    ["z"] = 1.67,
                 },
             },
             ["inUse"] = false
@@ -154,15 +154,15 @@ QBBoatshop.Locations = {
             ["boatModel"] = "marquis",
             ["coords"] = {
                 ["boat"] = {
-                    ["x"] = -445.21,
-                    ["y"] = 403.71,
-                    ["z"] = 0.01,
-                    ["h"] = 278.30
+                    ["x"] = -741.53,
+                    ["y"] = -1349.7,
+                    ["z"] = 0.79,
+                    ["h"] = 229.5
                 },
                 ["buy"] = {
-                    ["x"] = -453.03,
-                    ["y"] = 401.00,
-                    ["z"] = 1.51,
+                    ["x"] = -740.62,
+                    ["y"] = -1344.28,
+                    ["z"] = 1.67,
                 },
             },
             ["inUse"] = false
@@ -330,10 +330,10 @@ QBBoatshop.ShopBoats = {
 }
 
 QBBoatshop.SpawnVehicle = {
-    x = -462.80,
-    y = 438.49,
-    z = 0.01,
-    h = 98.65,
+    x = -729.77,
+    y = -1355.49,
+    z = 1.19,
+    h = 142.5,
 }
 
 QBDiving.Locations = {
@@ -341,9 +341,9 @@ QBDiving.Locations = {
         label = "This is Location 1",
         coords = {
             Area = {
-                x = 53.45,
-                y = 1538.67,
-                z = 3.30
+                x = -2838.8,
+                y = -376.1,
+                z = 3.55
             },
             Coral = {
                 [1] = {
@@ -387,9 +387,9 @@ QBDiving.Locations = {
         label = "Location 2",
         coords = {
             Area = {
-                x = 15.44,
-                y = 1309.54,
-                z = 4.00,
+                x = -3288.2,
+                y = -67.58,
+                z = 2.79,
             },
             Coral = {
                 [1] = {
@@ -421,6 +421,220 @@ QBDiving.Locations = {
         DefaultCoral = 3,
         TotalCoral = 3,
     },
+    [3] = {
+        label = "Location 3",
+        coords = {
+            Area = {
+                x = -3367.24,
+                y = 1617.89,
+                z = 1.39,
+            },
+            Coral = {
+                [1] = {
+                    coords = {
+                        x = -3388.01,
+                        y = 1635.88,
+                        z = -39.41,
+                    },
+                    PickedUp = false
+                },
+                [2] = {
+                    coords = {
+                        x = -3354.19,
+                        y = 1549.3,
+                        z = -38.21,
+                    },
+                    PickedUp = false
+                },
+                [3] = {
+                    coords = {
+                        x = -3326.04,
+                        y = 1636.43,
+                        z = -40.98
+                    },
+                    PickedUp = false
+                },
+            }
+        },
+        DefaultCoral = 3,
+        TotalCoral = 3,
+    },
+    [4] = {
+        label = "Location 4",
+        coords = {
+            Area = {
+                x = 3002.5,
+                y = -1538.28,
+                z = -27.36,
+            },
+            Coral = {
+                [1] = {
+                    coords = {
+                        x = 2978.05,
+                        y = -1509.07,
+                        z = -24.96,
+                    },
+                    PickedUp = false
+                },
+                [2] = {
+                    coords = {
+                        x = 3004.42,
+                        y = -1576.95,
+                        z = -29.36,
+                    },
+                    PickedUp = false
+                },
+                [3] = {
+                    coords = {
+                        x = 2951.65,
+                        y = -1560.69,
+                        z = -28.36,
+                    },
+                    PickedUp = false
+                },
+            }
+        },
+        DefaultCoral = 3,
+        TotalCoral = 3,
+    },
+    [5] = {
+        label = "Location 5",
+        coords = {
+            Area = {
+                x = 3421.58,
+                y = 1975.68,
+                z = 0.86,
+            },
+            Coral = {
+                [1] = {
+                    coords = {
+                        x = 3421.69,
+                        y = 1976.54,
+                        z = -50.64,
+                    },
+                    PickedUp = false
+                },
+                [2] = {
+                    coords = {
+                        x = 3424.07,
+                        y = 1957.46,
+                        z = -53.04,
+                    },
+                    PickedUp = false
+                },
+                [3] = {
+                    coords = {
+                        x = 3434.65,
+                        y = 1993.73,
+                        z = -49.84,
+                    },
+                    PickedUp = false
+                },
+                [4] = {
+                    coords = {
+                        x = 3415.42,
+                        y = 1965.25,
+                        z = -52.04,
+                    },
+                    PickedUp = false
+                },
+            }
+        },
+        DefaultCoral = 4,
+        TotalCoral = 4,
+    },
+    [6] = {
+        label = "Location 6",
+        coords = {
+            Area = {
+                x = 2720.14,
+                y = -2136.28,
+                z = 0.74,
+            },
+            Coral = {
+                [1] = {
+                    coords = {
+                        x = 2724.0,
+                        y = -2134.95,
+                        z = -19.33,
+                    },
+                    PickedUp = false
+                },
+                [2] = {
+                    coords = {
+                        x = 2710.68,
+                        y = -2156.06,
+                        z = -18.63,
+                    },
+                    PickedUp = false
+                },
+                [3] = {
+                    coords = {
+                        x = 2702.84,
+                        y = -2139.29,
+                        z = -18.51,
+                    },
+                    PickedUp = false
+                },
+                [4] = {
+                    coords = {
+                        x = 2736.27,
+                        y = -2153.91,
+                        z = -20.88,
+                    },
+                    PickedUp = false
+                },
+            }
+        },
+        DefaultCoral = 4,
+        TotalCoral = 4,
+    },
+    [7] = {
+        label = "Location 7",
+        coords = {
+            Area = {
+                x = 536.69,
+                y = 7253.75,
+                z = 1.69,
+            },
+            Coral = {
+                [1] = {
+                    coords = {
+                        x = 542.31,
+                        y = 7245.37,
+                        z = -30.01,
+                    },
+                    PickedUp = false
+                },
+                [2] = {
+                    coords = {
+                        x = 528.21,
+                        y = 7223.26,
+                        z = -29.51,
+                    },
+                    PickedUp = false
+                },
+                [3] = {
+                    coords = {
+                        x = 510.36,
+                        y = 7254.97,
+                        z = -32.11,
+                    },
+                    PickedUp = false
+                },
+                [4] = {
+                    coords = {
+                        x = 525.37,
+                        y = 7259.12,
+                        z = -30.51,
+                    },
+                    PickedUp = false
+                },
+            }
+        },
+        DefaultCoral = 4,
+        TotalCoral = 4,
+    },
 }
 
 --ALSO CHANGE VALUES IN SERVER/MAIN.LUA
@@ -443,9 +657,9 @@ QBDiving.SellLocations = {
         -- ["x"] = -1684.13,
         -- ["y"] = -1068.91,
         -- ["z"] = 13.15
-        x = 691.49,
-        y = 1.98,
-        z = 5.81,
+        x = -1684.13,
+        y = -1068.91,
+        z = 13.15,
 
     }
 }
