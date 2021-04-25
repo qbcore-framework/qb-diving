@@ -147,35 +147,33 @@ QBCore.Commands.Add("divingsuit", "Take off your diving suit", {}, false, functi
     TriggerClientEvent("qb-diving:client:UseGear", source, false)
 end)
 
-RegisterServerEvent("qb-diving:server:SellCoral")
-AddEventHandler("qb-diving:server:SellCoral", function()
+RegisterServerEvent('qb-diving:server:SellCoral')
+AddEventHandler('qb-diving:server:SellCoral', function()
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local antipatharia_coral = Player.Functions.GetItemByName('antipatharia_coral')
-    local dendrogyra_coral = Player.Functions.GetItemByName('dendrogyra_coral')
-    local price = 0
 
-        if antipatharia_coral or dendrogyra_coral ~= nil then
+    if HasCoral(src) then
+        for k, v in pairs(AvailableCoral) do
+            local Item = Player.Functions.GetItemByName(v.item)
+            local price = (Item.amount * v.price)
+            local Reward = math.ceil(GetItemPrice(Item, price))
 
-            if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
-                for k, v in pairs(Player.PlayerData.items) do 
-                    if Player.PlayerData.items[k] ~= nil then 
-                        if CoralTypes[Player.PlayerData.items[k].name] ~= nil then 
-                            price = (CoralTypes[Player.PlayerData.items[k].name] * Player.PlayerData.items[k].amount)
-                            Player.Functions.RemoveItem(Player.PlayerData.items[k].name, Player.PlayerData.items[k].amount, k)
-                        end
-                    end
+            if Item.amount > 1 then
+                for i = 1, Item.amount, 1 do
+                    Player.Functions.RemoveItem(Item.name, 1)
+                    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[Item.name], "remove")
+                    Player.Functions.AddMoney('cash', math.ceil((Reward / Item.amount)), "sold-coral")
+                    Citizen.Wait(250)
                 end
-                Player.Functions.AddItem("cash", price, false) 
-				TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['cash'], "add")
-                TriggerClientEvent('QBCore:Notify', src, "You Sold Some Coral for $"..price)
+            else
+                Player.Functions.RemoveItem(Item.name, 1)
+                Player.Functions.AddMoney('cash', Reward, "sold-coral")
+                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[Item.name], "remove")
             end
-        else
-            TriggerClientEvent('QBCore:Notify', src, "You Have No Coral")
         end
-  
-
-    
+    else
+        TriggerClientEvent('QBCore:Notify', src, 'You don\'t have any coral to sell..', 'error')
+    end
 end)
 
 
