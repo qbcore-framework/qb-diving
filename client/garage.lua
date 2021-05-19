@@ -35,7 +35,7 @@ Citizen.CreateThread(function()
                         QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, "~g~E~w~ - Take Boat")
                         if IsControlJustReleased(0, 38) then
                             local coords = QBBoatshop.PoliceBoatSpawn
-                            QBCore.Functions.SpawnVehicle("pboot", function(veh)
+                            QBCore.Functions.SpawnVehicle("predator", function(veh)
                                 SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
                                 SetEntityHeading(veh, coords.h)
                                 exports['LegacyFuel']:SetFuel(veh, 100.0)
@@ -68,7 +68,7 @@ Citizen.CreateThread(function()
                         QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z, "~g~E~w~ - Take Boat")
                         if IsControlJustReleased(0, 38) then
                             local coords = QBBoatshop.PoliceBoatSpawn2
-                            QBCore.Functions.SpawnVehicle("pboot", function(veh)
+                            QBCore.Functions.SpawnVehicle("predator", function(veh)
                                 SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
                                 SetEntityHeading(veh, coords.h)
                                 exports['LegacyFuel']:SetFuel(veh, 100.0)
@@ -254,7 +254,7 @@ function MenuBoatDepot()
     end)
 end
 
-function VoertuigLijst()
+function VehicleList()
     ClearMenu()
     QBCore.Functions.TriggerCallback("qb-diving:server:GetMyBoats", function(result)
         ped = PlayerPedId();
@@ -317,7 +317,7 @@ function MenuGarage()
     ped = PlayerPedId();
     MenuTitle = "Garage"
     ClearMenu()
-    Menu.addButton("My Vehicles", "Vehicle List", nil)
+    Menu.addButton("My Vehicles", "VehicleList", nil)
     Menu.addButton("Close Menu", "CloseMenu", nil)
 end
 
