@@ -57,7 +57,7 @@ AddEventHandler('qb-diving:server:BuyBoat', function(boatModel, BerthId)
 end)
 
 function InsertBoat(boatModel, Player, plate)
-    QBCore.Functions.ExecuteSql(false, "INSERT INTO `player_boats` (`citizenid`, `model`, `plate`) VALUES ('"..Player.PlayerData.citizenid.."', '"..boatModel.."', '"..plate.."')")
+    QBCore.Functions.ExecuteSql(false, {['a']=Player.PlayerData.citizenid,['b']=boatModel,['c']=plate}, "INSERT INTO `player_boats` (`citizenid`, `model`, `plate`) VALUES (@a, @b, @c)")
 end
 
 QBCore.Functions.CreateUseableItem("jerry_can", function(source, item)
@@ -84,7 +84,7 @@ QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, 
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_boats` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' AND `boathouse` = '"..dock.."'", function(result)
+    QBCore.Functions.ExecuteSql(false, {['a']=Player.PlayerData.citizenid,['b']=dock}, "SELECT * FROM `player_boats` WHERE `citizenid` = @a AND `boathouse` = @b", function(result)
         if result[1] ~= nil then
             cb(result)
         else
@@ -97,7 +97,7 @@ QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(sourc
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_boats` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' AND `state` = '0'", function(result)
+    QBCore.Functions.ExecuteSql(false, {['a']=Player.PlayerData.citizenid}, "SELECT * FROM `player_boats` WHERE `citizenid` = @a AND `state` = '0'", function(result)
         if result[1] ~= nil then
             cb(result)
         else
@@ -110,11 +110,11 @@ RegisterServerEvent('qb-diving:server:SetBoatState')
 AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathouse)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_boats` WHERE `plate` = '"..plate.."'", function(result)
+    QBCore.Functions.ExecuteSql(false, {['a']=plate}, "SELECT * FROM `player_boats` WHERE `plate` = @a", function(result)
         if result[1] ~= nil then
-            QBCore.Functions.ExecuteSql(false, "UPDATE `player_boats` SET `state` = '"..state.."' WHERE `plate` = '"..plate.."' AND `citizenid` = '"..Player.PlayerData.citizenid.."'")
+            QBCore.Functions.ExecuteSql(false, {['a']=state,['b']=plate,['c']=Player.PlayerData.citizenid}, "UPDATE `player_boats` SET `state` = @b WHERE `plate` = @b AND `citizenid` = @c")
             if state == 1 then
-                QBCore.Functions.ExecuteSql(false, "UPDATE `player_boats` SET `boathouse` = '"..boathouse.."' WHERE `plate` = '"..plate.."' AND `citizenid` = '"..Player.PlayerData.citizenid.."'")
+                QBCore.Functions.ExecuteSql(false, {['a']=boathouse,['b']=plate,['c']=Player.PlayerData.citizenid}, "UPDATE `player_boats` SET `boathouse` = @a WHERE `plate` = @b AND `citizenid` = @c")
             end
         end
     end)
