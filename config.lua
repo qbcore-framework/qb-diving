@@ -4,7 +4,6 @@ QBDiving = QBDiving or {}
 QBBoatshop.PoliceBoat = vector3(-800.67, -1494.54, 1.59)
 
 QBBoatshop.PoliceBoatSpawn = vector4(-793.58, -1501.4, 0.12, 111.5)
-}
 
 QBBoatshop.PoliceBoat2 = vector3(-279.41, 6635.09, 7.51)
 
