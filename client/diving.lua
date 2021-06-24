@@ -41,7 +41,7 @@ AddEventHandler('qb-diving:client:SetDivingLocation', function(DivingLocation)
         SetBlipAsShortRange(LabelBlip, true)
 
         BeginTextCommandSetBlipName('STRING')
-        AddTextComponentSubstringPlayerName('Diving area')
+        AddTextComponentSubstringPlayerName('Diving Area')
         EndTextCommandSetBlipName(LabelBlip)
 
         CurrentDivingLocation.Blip.Label = LabelBlip
