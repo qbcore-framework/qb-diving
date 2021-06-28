@@ -31,33 +31,36 @@ AddEventHandler('qb-diving:server:BuyBoat', function(boatModel, BerthId)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local PlayerMoney = {
-        -- cash = Player.PlayerData.money.cash,
+        cash = Player.PlayerData.money.cash,
         bank = Player.PlayerData.money.bank,
     }
     local missingMoney = 0
-    local plate = "QBUS"..math.random(1000, 9999)
+    local plate = "QB-"..math.random(1000, 9999)
 
-    -- if PlayerMoney.cash >= BoatPrice then
-    --     Player.Functions.RemoveMoney('cash', BoatPrice, "bought-boat")
-    --     TriggerClientEvent('qb-diving:client:BuyBoat', src, boatModel, plate)
-    --     InsertBoat(boatModel, Player, plate)
-    -- else
-        if PlayerMoney.bank >= BoatPrice then
+    if PlayerMoney.cash >= BoatPrice then
+        Player.Functions.RemoveMoney('cash', BoatPrice, "bought-boat")
+        TriggerClientEvent('qb-diving:client:BuyBoat', src, boatModel, plate)
+        InsertBoat(boatModel, Player, plate)
+    elseif PlayerMoney.bank >= BoatPrice then
         Player.Functions.RemoveMoney('bank', BoatPrice, "bought-boat")
         TriggerClientEvent('qb-diving:client:BuyBoat', src, boatModel, plate)
         InsertBoat(boatModel, Player, plate)
     else
-        -- if PlayerMoney.bank > PlayerMoney.cash then
+        if PlayerMoney.bank > PlayerMoney.cash then
             missingMoney = (BoatPrice - PlayerMoney.bank)
-        -- else
-            -- missingMoney = (BoatPrice - PlayerMoney.cash)
-        -- end
-        TriggerClientEvent('QBCore:Notify', src, 'You do not have enough money, you are missing $'..missingMoney.. 'from the bank', 'error', 4000)
+        else
+            missingMoney = (BoatPrice - PlayerMoney.cash)
+        end
+        TriggerClientEvent('QBCore:Notify', src, 'Not Enough Money, You Are Missing $'..missingMoney..'', 'error')
     end
 end)
 
 function InsertBoat(boatModel, Player, plate)
-    QBCore.Functions.ExecuteSql(false, "INSERT INTO `player_boats` (`citizenid`, `model`, `plate`) VALUES ('"..Player.PlayerData.citizenid.."', '"..boatModel.."', '"..plate.."')")
+    exports.ghmattimysql:execute('INSERT INTO player_boats (citizenid, model, plate) VALUES (@citizenid, @model, @plate)', {
+        ['@citizenid'] = Player.PlayerData.citizenid,
+        ['@model'] = boatModel,
+        ['@plate'] = plate
+    })
 end
 
 QBCore.Functions.CreateUseableItem("jerry_can", function(source, item)
@@ -83,8 +86,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_boats` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' AND `boathouse` = '"..dock.."'", function(result)
+    exports.ghmattimysql:execute('SELECT * FROM player_boats WHERE citizenid=@citizenid AND boathouse=@boathouse', {['@citizenid'] = Player.PlayerData.citizenid, ['@boathouse'] = dock}, function(result)
         if result[1] ~= nil then
             cb(result)
         else
@@ -96,8 +98,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_boats` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' AND `state` = '0'", function(result)
+    exports.ghmattimysql:execute('SELECT * FROM player_boats WHERE citizenid=@citizenid AND state=@state', {['@citizenid'] = Player.PlayerData.citizenid, ['@state'] = 0}, function(result)
         if result[1] ~= nil then
             cb(result)
         else
@@ -110,11 +111,11 @@ RegisterServerEvent('qb-diving:server:SetBoatState')
 AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathouse)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_boats` WHERE `plate` = '"..plate.."'", function(result)
+    exports.ghmattimysql:execute('SELECT plate FROM player_boats WHERE plate=@plate', {['@plate'] = plate}, function(result)
         if result[1] ~= nil then
-            QBCore.Functions.ExecuteSql(false, "UPDATE `player_boats` SET `state` = '"..state.."' WHERE `plate` = '"..plate.."' AND `citizenid` = '"..Player.PlayerData.citizenid.."'")
+            exports.ghmattimysql:execute('UPDATE player_boats SET state=@state WHERE plate=@plate AND citizenid=@citizenid', {['@state'] = state, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizeni})
             if state == 1 then
-                QBCore.Functions.ExecuteSql(false, "UPDATE `player_boats` SET `boathouse` = '"..boathouse.."' WHERE `plate` = '"..plate.."' AND `citizenid` = '"..Player.PlayerData.citizenid.."'")
+                exports.ghmattimysql:execute('UPDATE player_boats SET boathouse=@boathouse WHERE plate=@plate AND citizenid=@citizenid', {['@boathouse'] = boathouse, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizeni})
             end
         end
     end)
