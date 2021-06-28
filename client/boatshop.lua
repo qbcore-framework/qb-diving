@@ -42,7 +42,7 @@ function SpawnBerthBoats()
         SetModelAsNoLongerNeeded(model)
 		SetVehicleOnGroundProperly(veh)
 		SetEntityInvincible(veh,true)
-        SetEntityHeading(veh, QBBoatshop.Locations["berths"][loc]["coords"]["boat"]["h"])
+        SetEntityHeading(veh, QBBoatshop.Locations["berths"][loc]["coords"]["boat"]["w"])
         SetVehicleDoorsLocked(veh, 3)
 
 		FreezeEntityPosition(veh,true)     
