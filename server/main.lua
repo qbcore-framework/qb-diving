@@ -1,6 +1,3 @@
-QBCore = nil
-TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
-
 local CoralTypes = {
     ["dendrogyra_coral"] = math.random(70, 100),
     ["antipatharia_coral"] = math.random(50, 70),
