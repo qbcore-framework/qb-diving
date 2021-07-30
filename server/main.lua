@@ -83,39 +83,36 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    exports.ghmattimysql:execute('SELECT * FROM player_boats WHERE citizenid=@citizenid AND boathouse=@boathouse', {['@citizenid'] = Player.PlayerData.citizenid, ['@boathouse'] = dock}, function(result)
-        if result[1] ~= nil then
-            cb(result)
-        else
-            cb(nil)
-        end
-    end)
+    local result = exports.ghmattimysql:executeSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND boathouse=@boathouse', {['@citizenid'] = Player.PlayerData.citizenid, ['@boathouse'] = dock})
+    if result[1] ~= nil then
+        cb(result)
+    else
+        cb(nil)
+    end
 end)
 
 QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    exports.ghmattimysql:execute('SELECT * FROM player_boats WHERE citizenid=@citizenid AND state=@state', {['@citizenid'] = Player.PlayerData.citizenid, ['@state'] = 0}, function(result)
-        if result[1] ~= nil then
-            cb(result)
-        else
-            cb(nil)
-        end
-    end)
+    local result = exports.ghmattimysql:executeSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND state=@state', {['@citizenid'] = Player.PlayerData.citizenid, ['@state'] = 0})
+    if result[1] ~= nil then
+        cb(result)
+    else
+        cb(nil)
+    end
 end)
 
 RegisterServerEvent('qb-diving:server:SetBoatState')
 AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathouse)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    exports.ghmattimysql:execute('SELECT plate FROM player_boats WHERE plate=@plate', {['@plate'] = plate}, function(result)
-        if result[1] ~= nil then
-            exports.ghmattimysql:execute('UPDATE player_boats SET state=@state WHERE plate=@plate AND citizenid=@citizenid', {['@state'] = state, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizenid})
-            if state == 1 then
-                exports.ghmattimysql:execute('UPDATE player_boats SET boathouse=@boathouse WHERE plate=@plate AND citizenid=@citizenid', {['@boathouse'] = boathouse, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizenid})
-            end
+    local result = exports.ghmattimysql:executeSync('SELECT plate FROM player_boats WHERE plate=@plate', {['@plate'] = plate})
+    if result[1] ~= nil then
+        exports.ghmattimysql:execute('UPDATE player_boats SET state=@state WHERE plate=@plate AND citizenid=@citizenid', {['@state'] = state, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizenid})
+        if state == 1 then
+            exports.ghmattimysql:execute('UPDATE player_boats SET boathouse=@boathouse WHERE plate=@plate AND citizenid=@citizenid', {['@boathouse'] = boathouse, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizenid})
         end
-    end)
+    end
 end)
 
 RegisterServerEvent('qb-diving:server:CallCops')
