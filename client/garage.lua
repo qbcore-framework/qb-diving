@@ -181,13 +181,21 @@ Citizen.CreateThread(function()
     end
 end)
 
+function Trim(value)
+	if value then
+		return (string.gsub(value, "^%s*(.-)%s*$", "%1"))
+	else
+		return nil
+	end
+end
+
 function RemoveVehicle()
     local ped = PlayerPedId()
     local Boat = IsPedInAnyBoat(ped)
 
     if Boat then
         local CurVeh = GetVehiclePedIsIn(ped)
-        TriggerServerEvent('qb-diving:server:SetBoatState', GetVehicleNumberPlateText(CurVeh), 1, ClosestDock)
+        TriggerServerEvent('qb-diving:server:SetBoatState', Trim(GetVehicleNumberPlateText(CurVeh)), 1, ClosestDock)
 
         QBCore.Functions.DeleteVehicle(CurVeh)
         SetEntityCoords(ped, QBBoatshop.Docks[ClosestDock].coords.take.x, QBBoatshop.Docks[ClosestDock].coords.take.y, QBBoatshop.Docks[ClosestDock].coords.take.z)
