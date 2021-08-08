@@ -195,7 +195,8 @@ function RemoveVehicle()
 
     if Boat then
         local CurVeh = GetVehiclePedIsIn(ped)
-        TriggerServerEvent('qb-diving:server:SetBoatState', Trim(GetVehicleNumberPlateText(CurVeh)), 1, ClosestDock)
+        local totalFuel = exports['LegacyFuel']:GetFuel(CurVeh)
+        TriggerServerEvent('qb-diving:server:SetBoatState', Trim(GetVehicleNumberPlateText(CurVeh)), 1, ClosestDock, totalFuel)
 
         QBCore.Functions.DeleteVehicle(CurVeh)
         SetEntityCoords(ped, QBBoatshop.Docks[ClosestDock].coords.take.x, QBBoatshop.Docks[ClosestDock].coords.take.y, QBBoatshop.Docks[ClosestDock].coords.take.z)
