@@ -242,3 +242,8 @@ function GearAnim()
     loadAnimDict("clothingshirt")    	
 	TaskPlayAnim(PlayerPedId(), "clothingshirt", "try_shirt_positive_d", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
 end
+
+RegisterNetEvent('qb-diving:client:RemoveGear')             --Add event to call externally
+AddEventHandler('qb-diving:client:RemoveGear', function()
+    TriggerEvent('qb-diving:client:UseGear', false)
+end)
