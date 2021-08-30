@@ -125,7 +125,7 @@ AddEventHandler('qb-diving:server:CallCops', function(Coords)
                 local msg = "This coral may be stolen"
                 TriggerClientEvent('qb-diving:client:CallCops', Player.PlayerData.source, Coords, msg)
                 local alertData = {
-                    title = "Illegaalduiken",
+                    title = "Illegal diving",
                     coords = {x = Coords.x, y = Coords.y, z = Coords.z},
                     description = msg,
                 }
