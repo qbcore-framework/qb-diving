@@ -302,7 +302,7 @@ function TakeOutVehicle(vehicle)
             TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
             TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
             SetVehicleEngineOn(veh, true, true)
-            TriggerServerEvent('qb-diving:server:SetBoatState', GetVehicleNumberPlateText(veh), 0, CurrentDock)
+            TriggerServerEvent('qb-diving:server:SetBoatState', Trim(GetVehicleNumberPlateText(veh)), 0, CurrentDock, 100)
         end, QBBoatshop.Docks[CurrentDock].coords.put, true)
     else
         QBCore.Functions.Notify("The boat is not in the boathouse", "error", 4500)
