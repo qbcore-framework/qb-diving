@@ -108,10 +108,13 @@ AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathous
     local Player = QBCore.Functions.GetPlayer(src)
     local result = exports.ghmattimysql:scalarSync('SELECT 1 FROM player_boats WHERE plate=@plate', {['@plate'] = plate})
     if result ~= nil then
-        exports.ghmattimysql:execute('UPDATE player_boats SET state=@state, fuel=@fuel WHERE plate=@plate AND citizenid=@citizenid', {['@state'] = state, ['@fuel'] = fuel, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizenid})
-        if state == 1 then
-            exports.ghmattimysql:execute('UPDATE player_boats SET boathouse=@boathouse WHERE plate=@plate AND citizenid=@citizenid', {['@boathouse'] = boathouse, ['@plate'] = plate, ['@citizenid'] = Player.PlayerData.citizenid})
-        end
+        exports.ghmattimysql:execute('UPDATE player_boats SET state=@state, boathouse=@boathouse, fuel=@fuel WHERE plate=@plate AND citizenid=@citizenid', {
+            ['@state'] = state,
+            ['@boathouse'] = boathouse,
+            ['@fuel'] = fuel,
+            ['@plate'] = plate,
+            ['@citizenid'] = Player.PlayerData.citizenid
+        })
     end
 end)
 
