@@ -310,6 +310,12 @@ function TakeOutVehicle(vehicle)
 end
 
 function TakeOutDepotBoat(vehicle)
+    local vehicles = QBCore.Functions.GetVehicles()
+    for _, v in pairs(vehicles) do 
+        if PlateToString(GetVehicleNumberPlateText(v)) == vehicle.plate then
+            QBCore.Functions.DeleteVehicle(v)
+        end
+    end
     QBCore.Functions.SpawnVehicle(vehicle.model, function(veh)
         SetVehicleNumberPlateText(veh, vehicle.plate)
         SetEntityHeading(veh, QBBoatshop.Depots[CurrentDock].coords.put.w)
@@ -320,6 +326,14 @@ function TakeOutDepotBoat(vehicle)
         TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
         SetVehicleEngineOn(veh, true, true)
     end, QBBoatshop.Depots[CurrentDock].coords.put, true)
+end
+
+function PlateToString(plate)
+	if plate then
+		return (string.gsub(plate, "^%s*(.-)%s*$", "%1"))
+	else
+		return nil
+	end
 end
 
 function MenuGarage()
