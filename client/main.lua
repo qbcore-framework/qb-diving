@@ -1,5 +1,5 @@
-isLoggedIn = false
-PlayerJob = {}
+local isLoggedIn = false
+local PlayerJob = {}
 
 RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
 AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
@@ -42,8 +42,6 @@ AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
         EndTextCommandSetBlipName(PoliceBlip)
     end
 end)
-
--- Code
 
 DrawText3D = function(x, y, z, text)
 	SetTextScale(0.35, 0.35)
