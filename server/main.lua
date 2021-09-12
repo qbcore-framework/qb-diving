@@ -53,7 +53,7 @@ AddEventHandler('qb-diving:server:BuyBoat', function(boatModel, BerthId)
 end)
 
 function InsertBoat(boatModel, Player, plate)
-    exports.ghmattimysql:execute('INSERT INTO player_boats (citizenid, model, plate) VALUES (@citizenid, @model, @plate)', {
+    exports.oxmysql:insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (@citizenid, @model, @plate)', {
         ['@citizenid'] = Player.PlayerData.citizenid,
         ['@model'] = boatModel,
         ['@plate'] = plate
@@ -83,7 +83,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.ghmattimysql:executeSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND boathouse=@boathouse', {['@citizenid'] = Player.PlayerData.citizenid, ['@boathouse'] = dock})
+    local result = exports.oxmysql:fetchSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND boathouse=@boathouse', {['@citizenid'] = Player.PlayerData.citizenid, ['@boathouse'] = dock})
     if result[1] ~= nil then
         cb(result)
     else
@@ -94,7 +94,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.ghmattimysql:executeSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND state=@state', {['@citizenid'] = Player.PlayerData.citizenid, ['@state'] = 0})
+    local result = exports.oxmysql:fetchSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND state=@state', {['@citizenid'] = Player.PlayerData.citizenid, ['@state'] = 0})
     if result[1] ~= nil then
         cb(result)
     else
@@ -106,9 +106,9 @@ RegisterServerEvent('qb-diving:server:SetBoatState')
 AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.ghmattimysql:scalarSync('SELECT 1 FROM player_boats WHERE plate=@plate', {['@plate'] = plate})
+    local result = exports.oxmysql:scalarSync('SELECT 1 FROM player_boats WHERE plate=@plate', {['@plate'] = plate})
     if result ~= nil then
-        exports.ghmattimysql:execute('UPDATE player_boats SET state=@state, boathouse=@boathouse, fuel=@fuel WHERE plate=@plate AND citizenid=@citizenid', {
+        exports.oxmysql:execute('UPDATE player_boats SET state=@state, boathouse=@boathouse, fuel=@fuel WHERE plate=@plate AND citizenid=@citizenid', {
             ['@state'] = state,
             ['@boathouse'] = boathouse,
             ['@fuel'] = fuel,
