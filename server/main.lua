@@ -1,6 +1,6 @@
 local CoralTypes = {
     ["dendrogyra_coral"] = math.random(70, 100),
-    ["antipatharia_coral"] = math.random(50, 70),
+    ["antipatharia_coral"] = math.random(50, 70)
 }
 
 -- Code
@@ -8,7 +8,7 @@ local CoralTypes = {
 RegisterServerEvent('qb-diving:server:SetBerthVehicle')
 AddEventHandler('qb-diving:server:SetBerthVehicle', function(BerthId, vehicleModel)
     TriggerClientEvent('qb-diving:client:SetBerthVehicle', -1, BerthId, vehicleModel)
-    
+
     QBBoatshop.Locations["berths"][BerthId]["boatModel"] = boatModel
 end)
 
@@ -29,10 +29,10 @@ AddEventHandler('qb-diving:server:BuyBoat', function(boatModel, BerthId)
     local Player = QBCore.Functions.GetPlayer(src)
     local PlayerMoney = {
         cash = Player.PlayerData.money.cash,
-        bank = Player.PlayerData.money.bank,
+        bank = Player.PlayerData.money.bank
     }
     local missingMoney = 0
-    local plate = "QB"..math.random(1000, 9999)
+    local plate = "QB" .. math.random(1000, 9999)
 
     if PlayerMoney.cash >= BoatPrice then
         Player.Functions.RemoveMoney('cash', BoatPrice, "bought-boat")
@@ -48,16 +48,13 @@ AddEventHandler('qb-diving:server:BuyBoat', function(boatModel, BerthId)
         else
             missingMoney = (BoatPrice - PlayerMoney.cash)
         end
-        TriggerClientEvent('QBCore:Notify', src, 'Not Enough Money, You Are Missing $'..missingMoney..'', 'error')
+        TriggerClientEvent('QBCore:Notify', src, 'Not Enough Money, You Are Missing $' .. missingMoney .. '', 'error')
     end
 end)
 
 function InsertBoat(boatModel, Player, plate)
-    exports.oxmysql:insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (@citizenid, @model, @plate)', {
-        ['@citizenid'] = Player.PlayerData.citizenid,
-        ['@model'] = boatModel,
-        ['@plate'] = plate
-    })
+    exports.oxmysql:insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?)',
+        {Player.PlayerData.citizenid, boatModel, plate})
 end
 
 QBCore.Functions.CreateUseableItem("jerry_can", function(source, item)
@@ -83,7 +80,8 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:fetchSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND boathouse=@boathouse', {['@citizenid'] = Player.PlayerData.citizenid, ['@boathouse'] = dock})
+    local result = exports.oxmysql:fetchSync('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?',
+        {Player.PlayerData.citizenid, dock})
     if result[1] ~= nil then
         cb(result)
     else
@@ -94,7 +92,8 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:fetchSync('SELECT * FROM player_boats WHERE citizenid=@citizenid AND state=@state', {['@citizenid'] = Player.PlayerData.citizenid, ['@state'] = 0})
+    local result = exports.oxmysql:fetchSync('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?',
+        {Player.PlayerData.citizenid, 0})
     if result[1] ~= nil then
         cb(result)
     else
@@ -106,15 +105,11 @@ RegisterServerEvent('qb-diving:server:SetBoatState')
 AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:scalarSync('SELECT 1 FROM player_boats WHERE plate=@plate', {['@plate'] = plate})
+    local result = exports.oxmysql:scalarSync('SELECT 1 FROM player_boats WHERE plate = ?', {plate})
     if result ~= nil then
-        exports.oxmysql:execute('UPDATE player_boats SET state=@state, boathouse=@boathouse, fuel=@fuel WHERE plate=@plate AND citizenid=@citizenid', {
-            ['@state'] = state,
-            ['@boathouse'] = boathouse,
-            ['@fuel'] = fuel,
-            ['@plate'] = plate,
-            ['@citizenid'] = Player.PlayerData.citizenid
-        })
+        exports.oxmysql:execute(
+            'UPDATE player_boats SET state = ?, boathouse = ?, fuel = ? WHERE plate = ? AND citizenid = ?',
+            {state, boathouse, fuel, plate, Player.PlayerData.citizenid})
     end
 end)
 
@@ -129,13 +124,17 @@ AddEventHandler('qb-diving:server:CallCops', function(Coords)
                 TriggerClientEvent('qb-diving:client:CallCops', Player.PlayerData.source, Coords, msg)
                 local alertData = {
                     title = "Illegal diving",
-                    coords = {x = Coords.x, y = Coords.y, z = Coords.z},
-                    description = msg,
+                    coords = {
+                        x = Coords.x,
+                        y = Coords.y,
+                        z = Coords.z
+                    },
+                    description = msg
                 }
                 TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
             end
         end
-	end
+    end
 end)
 
 local AvailableCoral = {}
@@ -173,7 +172,6 @@ AddEventHandler('qb-diving:server:SellCoral', function()
         TriggerClientEvent('QBCore:Notify', src, 'You don\'t have any coral to sell..', 'error')
     end
 end)
-
 
 function GetItemPrice(Item, price)
     if Item.amount > 5 then
