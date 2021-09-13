@@ -53,7 +53,7 @@ AddEventHandler('qb-diving:server:BuyBoat', function(boatModel, BerthId)
 end)
 
 function InsertBoat(boatModel, Player, plate)
-    exports.oxmysql:insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?)',
+    exports.oxmysql:insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?, ?, ?)',
         {Player.PlayerData.citizenid, boatModel, plate})
 end
 
