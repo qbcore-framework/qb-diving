@@ -1,5 +1,5 @@
 isLoggedIn = false
-local PlayerJob = {}
+PlayerJob = {}
 
 RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
 AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
