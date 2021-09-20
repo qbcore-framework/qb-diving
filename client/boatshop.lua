@@ -1,6 +1,5 @@
 local ClosestBerth = 1
 local BoatsSpawned = false
-local ModelLoaded = true
 local SpawnedBoats = {}
 local Buying = false
 
