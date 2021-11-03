@@ -192,7 +192,7 @@ function HasCoral(src)
     for k, v in pairs(QBDiving.CoralTypes) do
         local Item = Player.Functions.GetItemByName(v.item)
         if Item ~= nil then
-            table.insert(AvailableCoral, v)
+            AvailableCoral[#AvailableCoral+1] = v
             retval = true
         end
     end
