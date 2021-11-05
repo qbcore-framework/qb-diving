@@ -1,13 +1,8 @@
 QBBoatshop = QBBoatshop or {}
 QBDiving = QBDiving or {}
-
 QBBoatshop.PoliceBoat = vector3(-800.67, -1494.54, 1.59)
-
 QBBoatshop.PoliceBoatSpawn = vector4(-793.58, -1501.4, 0.12, 111.5)
-
 QBBoatshop.PoliceBoat2 = vector3(-279.41, 6635.09, 7.51)
-
-
 QBBoatshop.PoliceBoatSpawn2 = vector4(-293.10, 6642.69, 0.15, 65.5)
 
 QBBoatshop.Docks = {
@@ -295,9 +290,6 @@ QBDiving.CoralTypes = {
 
 QBDiving.SellLocations = {
     [1] = {
-    ["coords"] = vector3(-1684.13, -1068.91, 13.15)
-        -- ["x"] = -1684.13,
-        -- ["y"] = -1068.91,
-        -- ["z"] = 13.15
-}
+        ["coords"] = vector3(-1684.13, -1068.91, 13.15)
+    }
 }
