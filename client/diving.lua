@@ -190,8 +190,8 @@ AddEventHandler('qb-diving:client:UseGear', function(bool)
         GearAnim()
         QBCore.Functions.Progressbar("equip_gear", "Put on a diving suit", 5000, false, true, {}, {}, {}, {}, function() -- Done
             DeleteGear()
-            local maskModel = GetHashKey("p_d_scuba_mask_s")
-            local tankModel = GetHashKey("p_s_scuba_tank_s")
+            local maskModel = `p_d_scuba_mask_s`
+            local tankModel = `p_s_scuba_tank_s`
     
             RequestModel(tankModel)
             while not HasModelLoaded(tankModel) do
