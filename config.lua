@@ -289,5 +289,7 @@ QBDiving.CoralTypes = {
 }
 
 QBDiving.SellLocations = {
-    [1] = {["coords"] = vector3(-1684.13, -1068.91, 13.15)}
+    [1] = {
+        ["coords"] = vector3(-1684.13, -1068.91, 13.15)
+    }
 }
