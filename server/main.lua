@@ -3,17 +3,12 @@ local CoralTypes = {
     ["antipatharia_coral"] = math.random(50, 70)
 }
 
--- Code
-
-RegisterServerEvent('qb-diving:server:SetBerthVehicle')
-AddEventHandler('qb-diving:server:SetBerthVehicle', function(BerthId, vehicleModel)
+RegisterNetEvent('qb-diving:server:SetBerthVehicle', function(BerthId, vehicleModel)
     TriggerClientEvent('qb-diving:client:SetBerthVehicle', -1, BerthId, vehicleModel)
-
     QBBoatshop.Locations["berths"][BerthId]["boatModel"] = boatModel
 end)
 
-RegisterServerEvent('qb-diving:server:SetDockInUse')
-AddEventHandler('qb-diving:server:SetDockInUse', function(BerthId, InUse)
+RegisterNetEvent('qb-diving:server:SetDockInUse', function(BerthId, InUse)
     QBBoatshop.Locations["berths"][BerthId]["inUse"] = InUse
     TriggerClientEvent('qb-diving:client:SetDockInUse', -1, BerthId, InUse)
 end)
@@ -22,8 +17,7 @@ QBCore.Functions.CreateCallback('qb-diving:server:GetBusyDocks', function(source
     cb(QBBoatshop.Locations["berths"])
 end)
 
-RegisterServerEvent('qb-diving:server:BuyBoat')
-AddEventHandler('qb-diving:server:BuyBoat', function(boatModel, BerthId)
+RegisterNetEvent('qb-diving:server:BuyBoat', function(boatModel, BerthId)
     local BoatPrice = QBBoatshop.ShopBoats[boatModel]["price"]
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
@@ -69,11 +63,9 @@ QBCore.Functions.CreateUseableItem("diving_gear", function(source, item)
     TriggerClientEvent("qb-diving:client:UseGear", source, true)
 end)
 
-RegisterServerEvent('qb-diving:server:RemoveItem')
-AddEventHandler('qb-diving:server:RemoveItem', function(item, amount)
+RegisterNetEvent('qb-diving:server:RemoveItem', function(item, amount)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-
     Player.Functions.RemoveItem(item, amount)
 end)
 
@@ -101,8 +93,7 @@ QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(sourc
     end
 end)
 
-RegisterServerEvent('qb-diving:server:SetBoatState')
-AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
+RegisterNetEvent('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local result = exports.oxmysql:scalarSync('SELECT 1 FROM player_boats WHERE plate = ?', {plate})
@@ -113,8 +104,7 @@ AddEventHandler('qb-diving:server:SetBoatState', function(plate, state, boathous
     end
 end)
 
-RegisterServerEvent('qb-diving:server:CallCops')
-AddEventHandler('qb-diving:server:CallCops', function(Coords)
+RegisterNetEvent('qb-diving:server:CallCops', function(Coords)
     local src = source
     for k, v in pairs(QBCore.Functions.GetPlayers()) do
         local Player = QBCore.Functions.GetPlayer(v)
@@ -144,8 +134,7 @@ QBCore.Commands.Add("divingsuit", "Take off your diving suit", {}, false, functi
     TriggerClientEvent("qb-diving:client:UseGear", source, false)
 end)
 
-RegisterServerEvent('qb-diving:server:SellCoral')
-AddEventHandler('qb-diving:server:SellCoral', function()
+RegisterNetEvent('qb-diving:server:SellCoral', function()
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 
@@ -160,7 +149,7 @@ AddEventHandler('qb-diving:server:SellCoral', function()
                     Player.Functions.RemoveItem(Item.name, 1)
                     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[Item.name], "remove")
                     Player.Functions.AddMoney('cash', math.ceil((Reward / Item.amount)), "sold-coral")
-                    Citizen.Wait(250)
+                    Wait(250)
                 end
             else
                 Player.Functions.RemoveItem(Item.name, 1)
