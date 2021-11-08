@@ -6,16 +6,14 @@ local CurrentDivingLocation = {
     }
 }
 
-RegisterNetEvent('qb-diving:client:NewLocations')
-AddEventHandler('qb-diving:client:NewLocations', function()
+RegisterNetEvent('qb-diving:client:NewLocations', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(Config, Area)
         QBDiving.Locations = Config
         TriggerEvent('qb-diving:client:SetDivingLocation', Area)
     end)
 end)
 
-RegisterNetEvent('qb-diving:client:SetDivingLocation')
-AddEventHandler('qb-diving:client:SetDivingLocation', function(DivingLocation)
+RegisterNetEvent('qb-diving:client:SetDivingLocation', function(DivingLocation)
     CurrentDivingLocation.Area = DivingLocation
 
     for _,Blip in pairs(CurrentDivingLocation.Blip) do
@@ -24,7 +22,7 @@ AddEventHandler('qb-diving:client:SetDivingLocation', function(DivingLocation)
         end
     end
     
-    Citizen.CreateThread(function()
+    CreateThread(function()
         RadiusBlip = AddBlipForRadius(QBDiving.Locations[CurrentDivingLocation.Area].coords.Area.x, QBDiving.Locations[CurrentDivingLocation.Area].coords.Area.y, QBDiving.Locations[CurrentDivingLocation.Area].coords.Area.z, 100.0)
         
         SetBlipRotation(RadiusBlip, 0)
@@ -51,11 +49,11 @@ end)
 function loadAnimDict( dict )
     while ( not HasAnimDictLoaded( dict ) ) do
         RequestAnimDict( dict )
-        Citizen.Wait( 0 )
+        Wait( 0 )
     end
 end
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         local inRange = false
         local Ped = PlayerPedId()
@@ -111,10 +109,10 @@ Citizen.CreateThread(function()
         end
 
         if not inRange then
-            Citizen.Wait(2500)
+            Wait(2500)
         end
 
-        Citizen.Wait(3)
+        Wait(3)
     end
 end)
 
@@ -123,8 +121,7 @@ function TakeCoral(coral)
     TriggerServerEvent('qb-diving:server:TakeCoral', CurrentDivingLocation.Area, coral, true)
 end
 
-RegisterNetEvent('qb-diving:client:UpdateCoral')
-AddEventHandler('qb-diving:client:UpdateCoral', function(Area, Coral, Bool)
+RegisterNetEvent('qb-diving:client:UpdateCoral', function(Area, Coral, Bool)
     QBDiving.Locations[Area].coords.Coral[Coral].PickedUp = Bool
 end)
 
@@ -139,8 +136,7 @@ function CallCops()
     end
 end
 
-RegisterNetEvent('qb-diving:server:CallCops')
-AddEventHandler('qb-diving:server:CallCops', function(Coords, msg)
+RegisterNetEvent('qb-diving:server:CallCops', function(Coords, msg)
     PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
     TriggerEvent("chatMessage", "911 MESSAGE", "error", msg)
     local transG = 100
@@ -184,8 +180,7 @@ function DeleteGear()
 	end
 end
 
-RegisterNetEvent('qb-diving:client:UseGear')
-AddEventHandler('qb-diving:client:UseGear', function(bool)
+RegisterNetEvent('qb-diving:client:UseGear', function(bool)
     if bool then
         GearAnim()
         QBCore.Functions.Progressbar("equip_gear", "Put on a diving suit", 5000, false, true, {}, {}, {}, {}, function() -- Done
@@ -195,7 +190,7 @@ AddEventHandler('qb-diving:client:UseGear', function(bool)
     
             RequestModel(tankModel)
             while not HasModelLoaded(tankModel) do
-                Citizen.Wait(1)
+                Wait(1)
             end
             TankObject = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
             local bone1 = GetPedBoneIndex(PlayerPedId(), 24818)
@@ -204,7 +199,7 @@ AddEventHandler('qb-diving:client:UseGear', function(bool)
     
             RequestModel(maskModel)
             while not HasModelLoaded(maskModel) do
-                Citizen.Wait(1)
+                Wait(1)
             end
             
             MaskObject = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
@@ -243,7 +238,6 @@ function GearAnim()
 	TaskPlayAnim(PlayerPedId(), "clothingshirt", "try_shirt_positive_d", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
 end
 
-RegisterNetEvent('qb-diving:client:RemoveGear')             --Add event to call externally
-AddEventHandler('qb-diving:client:RemoveGear', function()
+RegisterNetEvent('qb-diving:client:RemoveGear', function()	--Add event to call externally
     TriggerEvent('qb-diving:client:UseGear', false)
 end)
