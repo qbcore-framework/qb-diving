@@ -2,8 +2,7 @@ local CurrentDock = nil
 local ClosestDock = nil
 local PoliceBlip = nil
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate')
-AddEventHandler('QBCore:Client:OnJobUpdate', function(JobInfo)
+RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     PlayerJob = JobInfo
     if PlayerJob.name == "police" then
         if PoliceBlip ~= nil then
@@ -22,9 +21,9 @@ AddEventHandler('QBCore:Client:OnJobUpdate', function(JobInfo)
     end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
-        Citizen.Wait(3)
+        Wait(3)
         if isLoggedIn then
             local pos = GetEntityCoords(PlayerPedId())
             if PlayerJob.name == "police" then
@@ -46,18 +45,18 @@ Citizen.CreateThread(function()
                         end
                     end
                 else
-                    Citizen.Wait(1000)
+                    Wait(1000)
                 end
             else
-                Citizen.Wait(3000)
+                Wait(3000)
             end
         end
     end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
-        Citizen.Wait(3)
+        Wait(3)
         if isLoggedIn then
             local pos = GetEntityCoords(PlayerPedId())
             if PlayerJob.name == "police" then
@@ -79,16 +78,16 @@ Citizen.CreateThread(function()
                         end
                     end
                 else
-                    Citizen.Wait(1000)
+                    Wait(1000)
                 end
             else
-                Citizen.Wait(3000)
+                Wait(3000)
             end
         end
     end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
 
         local inRange = false
@@ -174,10 +173,10 @@ Citizen.CreateThread(function()
         end
 
         if not inRange then
-            Citizen.Wait(1000)
+            Wait(1000)
         end
 
-        Citizen.Wait(4)
+        Wait(4)
     end
 end)
 
@@ -203,7 +202,7 @@ function RemoveVehicle()
     end
 end
 
-Citizen.CreateThread(function()
+CreateThread(function()
     for k, v in pairs(QBBoatshop.Docks) do
         DockGarage = AddBlipForCoord(v.coords.put.x, v.coords.put.y, v.coords.put.z)
 
@@ -232,8 +231,6 @@ Citizen.CreateThread(function()
         EndTextCommandSetBlipName(BoatDepot)
     end
 end)
-
--- MENU JAAAAAAAAAAAAAA
 
 function MenuBoatDepot()
     ClearMenu()
