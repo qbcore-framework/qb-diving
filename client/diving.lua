@@ -128,6 +128,7 @@ end)
 RegisterNetEvent('qb-diving:client:UseGear', function(bool)
     if bool then
         GearAnim()
+        local ped  = PlayerPedId()
         QBCore.Functions.Progressbar("equip_gear", "Put on a diving suit", 5000, false, true, {}, {}, {}, {}, function() -- Done
             DeleteGear()
             local maskModel = `p_d_scuba_mask_s`
@@ -138,8 +139,8 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
                 Wait(1)
             end
             TankObject = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
-            local bone1 = GetPedBoneIndex(PlayerPedId(), 24818)
-            AttachEntityToEntity(TankObject, PlayerPedId(), bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+            local bone1 = GetPedBoneIndex(ped, 24818)
+            AttachEntityToEntity(TankObject, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
             currentGear.tank = TankObject
 
             RequestModel(maskModel)
@@ -148,28 +149,32 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
             end
 
             MaskObject = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
-            local bone2 = GetPedBoneIndex(PlayerPedId(), 12844)
-            AttachEntityToEntity(MaskObject, PlayerPedId(), bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+            local bone2 = GetPedBoneIndex(ped, 12844)
+            AttachEntityToEntity(MaskObject, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
             currentGear.mask = MaskObject
 
-            SetEnableScuba(PlayerPedId(), true)
-            SetPedMaxTimeUnderwater(PlayerPedId(), 2000.00)
+            SetPedDiesInWater(ped, false)
             currentGear.enabled = true
             TriggerServerEvent('qb-diving:server:RemoveGear')
-            ClearPedTasks(PlayerPedId())
+            ClearPedTasks(ped)
             TriggerEvent('chatMessage', "SYSTEM", "error", "/divingsuit to take off your diving suit")
+           
+           
+            Wait(300000) ---autoremove after this time in ms default is 5 mins
+            DeleteGear()
+            SetPedDiesInWater(ped, true)
+            currentGear.enabled = false
+            QBCore.Functions.Notify('Oxyzen Finished')
         end)
     else
         if currentGear.enabled then
             GearAnim()
             QBCore.Functions.Progressbar("remove_gear", "Pull out a diving suit ..", 5000, false, true, {}, {}, {}, {}, function() -- Done
                 DeleteGear()
-
-                SetEnableScuba(PlayerPedId(), false)
-                SetPedMaxTimeUnderwater(PlayerPedId(), 1.00)
+                SetPedDiesInWater(ped, true)
                 currentGear.enabled = false
                 TriggerServerEvent('qb-diving:server:GiveBackGear')
-                ClearPedTasks(PlayerPedId())
+                ClearPedTasks(ped)
                 QBCore.Functions.Notify('You took your wetsuit off')
             end)
         else
@@ -177,6 +182,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
         end
     end
 end)
+
 
 RegisterNetEvent('qb-diving:client:RemoveGear', function()	--Add event to call externally
     TriggerEvent('qb-diving:client:UseGear', false)
