@@ -1,8 +1,7 @@
 isLoggedIn = false
 PlayerJob = {}
 
-RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
-AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetBusyDocks', function(Docks)
         QBBoatshop.Locations["berths"] = Docks
     end)
@@ -58,8 +57,7 @@ DrawText3D = function(x, y, z, text)
     ClearDrawOrigin()
 end
 
-RegisterNetEvent('qb-diving:client:UseJerrycan')
-AddEventHandler('qb-diving:client:UseJerrycan', function()
+RegisterNetEvent('qb-diving:client:UseJerrycan', function()
     local ped = PlayerPedId()
     local boat = IsPedInAnyBoat(ped)
     if boat then

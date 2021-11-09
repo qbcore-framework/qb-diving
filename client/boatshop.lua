@@ -3,9 +3,7 @@ local BoatsSpawned = false
 local SpawnedBoats = {}
 local Buying = false
 
--- Berth's Boatshop Loop
-
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         local pos = GetEntityCoords(PlayerPedId(), true)
         local BerthDist = #(pos - vector3(QBBoatshop.Locations["berths"][1]["coords"]["boat"]["x"], QBBoatshop.Locations["berths"][1]["coords"]["boat"]["y"], QBBoatshop.Locations["berths"][1]["coords"]["boat"]["z"]))
@@ -21,7 +19,7 @@ Citizen.CreateThread(function()
             end
         end
 
-        Citizen.Wait(1000)
+        Wait(1000)
     end
 end)
 
@@ -33,7 +31,7 @@ function SpawnBerthBoats()
 		local model = GetHashKey(QBBoatshop.Locations["berths"][loc]["boatModel"])
 		RequestModel(model)
 		while not HasModelLoaded(model) do
-			Citizen.Wait(0)
+			Wait(0)
 		end
 
 		local veh = CreateVehicle(model, QBBoatshop.Locations["berths"][loc]["coords"]["boat"]["x"], QBBoatshop.Locations["berths"][loc]["coords"]["boat"]["y"], QBBoatshop.Locations["berths"][loc]["coords"]["boat"]["z"], false, false)
@@ -71,7 +69,7 @@ function SetClosestBerthBoat()
     end
 end
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         local ped = PlayerPedId()
         local pos = GetEntityCoords(ped)
@@ -116,14 +114,13 @@ Citizen.CreateThread(function()
             end
         end
 
-        Citizen.Wait(3)
+        Wait(3)
     end
 end)
 
-RegisterNetEvent('qb-diving:client:BuyBoat')
-AddEventHandler('qb-diving:client:BuyBoat', function(boatModel, plate)
+RegisterNetEvent('qb-diving:client:BuyBoat', function(boatModel, plate)
     DoScreenFadeOut(250)
-    Citizen.Wait(250)
+    Wait(250)
     QBCore.Functions.SpawnVehicle(boatModel, function(veh)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
         exports['LegacyFuel']:SetFuel(veh, 100)
@@ -136,7 +133,7 @@ AddEventHandler('qb-diving:client:BuyBoat', function(boatModel, plate)
     end)
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     BoatShop = AddBlipForCoord(QBBoatshop.Locations["berths"][1]["coords"]["boat"]["x"], QBBoatshop.Locations["berths"][1]["coords"]["boat"]["y"], QBBoatshop.Locations["berths"][1]["coords"]["boat"]["z"])
 
     SetBlipSprite (BoatShop, 410)

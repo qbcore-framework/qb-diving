@@ -1,6 +1,6 @@
 local notInteressted = false
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         local ped = PlayerPedId()
         local pos = GetEntityCoords(ped)
@@ -33,14 +33,14 @@ Citizen.CreateThread(function()
                 end
             end
         else
-            Citizen.Wait(5000)
+            Wait(5000)
         end
 
         if not inRange then
-            Citizen.Wait(1500)
+            Wait(1500)
         end
 
-        Citizen.Wait(3)
+        Wait(3)
     end
 end)
 
