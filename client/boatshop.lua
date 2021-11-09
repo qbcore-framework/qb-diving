@@ -44,7 +44,7 @@ function SpawnBerthBoats()
         SetEntityHeading(veh, QBBoatshop.Locations["berths"][loc]["coords"]["boat"]["w"])
         SetVehicleDoorsLocked(veh, 3)
 
-		FreezeEntityPosition(veh,true)     
+		FreezeEntityPosition(veh,true)
         SpawnedBoats[loc] = veh
     end
     BoatsSpawned = true
@@ -90,7 +90,7 @@ Citizen.CreateThread(function()
             DrawMarker(2, BuyLocation.x, BuyLocation.y, BuyLocation.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.5, 0.15, 255, 55, 15, 255, false, false, false, true, false, false, false)
             local BuyDistance = #(pos - vector3(BuyLocation.x, BuyLocation.y, BuyLocation.z))
 
-            if BuyDistance < 2 then                
+            if BuyDistance < 2 then
                 local currentBoat = QBBoatshop.Locations["berths"][ClosestBerth]["boatModel"]
 
                 DrawMarker(2, QBBoatshop.Locations["berths"][ClosestBerth]["coords"]["boat"]["x"], QBBoatshop.Locations["berths"][ClosestBerth]["coords"]["boat"]["y"], QBBoatshop.Locations["berths"][ClosestBerth]["coords"]["boat"]["z"] + 1.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.5, -0.30, 15, 255, 55, 255, false, false, false, true, false, false, false)
@@ -129,7 +129,7 @@ AddEventHandler('qb-diving:client:BuyBoat', function(boatModel, plate)
         exports['LegacyFuel']:SetFuel(veh, 100)
         SetVehicleNumberPlateText(veh, plate)
         SetEntityHeading(veh, QBBoatshop.SpawnVehicle.w)
-        TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
+        TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
     end, QBBoatshop.SpawnVehicle, false)
     SetTimeout(1000, function()
         DoScreenFadeIn(250)
