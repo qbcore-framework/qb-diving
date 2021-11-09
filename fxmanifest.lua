@@ -4,10 +4,7 @@ game 'gta5'
 description 'QB-Diving'
 version '1.0.0'
 
-shared_scripts { 
-	'@qb-core/import.lua',
-	'config.lua'
-}
+shared_script 'config.lua'
 
 server_scripts {
 	'server/main.lua',

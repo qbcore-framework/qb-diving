@@ -34,7 +34,7 @@ RegisterNetEvent('qb-diving:server:TakeCoral', function(Area, Coral, Bool)
             newLocation = math.random(1, #QBDiving.Locations)
         end
         CurrentDivingArea = newLocation
-        
+
         TriggerClientEvent('qb-diving:client:NewLocations', -1)
     else
         QBDiving.Locations[Area].coords.Coral[Coral].PickedUp = Bool
@@ -55,7 +55,7 @@ end)
 RegisterNetEvent('qb-diving:server:GiveBackGear', function()
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    
+
     Player.Functions.AddItem("diving_gear", 1)
     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "add")
 end)

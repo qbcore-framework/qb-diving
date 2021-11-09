@@ -1,5 +1,9 @@
 local notInteressted = false
 
+local function ClearTimeOut()
+    notInteressted = not notInteressted
+end
+
 CreateThread(function()
     while true do
         local ped = PlayerPedId()
@@ -43,7 +47,3 @@ CreateThread(function()
         Wait(3)
     end
 end)
-
-function ClearTimeOut()
-    notInteressted = not notInteressted
-end

@@ -2,6 +2,131 @@ local CurrentDock = nil
 local ClosestDock = nil
 local PoliceBlip = nil
 
+-- Functions
+
+function TakeOutDepotBoat(vehicle)
+    QBCore.Functions.SpawnVehicle(vehicle.model, function(veh)
+        SetVehicleNumberPlateText(veh, vehicle.plate)
+        SetEntityHeading(veh, QBBoatshop.Depots[CurrentDock].coords.put.w)
+        exports['LegacyFuel']:SetFuel(veh, vehicle.fuel)
+        QBCore.Functions.Notify("Vehicle Off: Fuel: "..currentFuel.. "%", "primary", 4500)
+        CloseMenu()
+        TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+        TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
+        SetVehicleEngineOn(veh, true, true)
+    end, QBBoatshop.Depots[CurrentDock].coords.put, true)
+end
+
+function TakeOutVehicle(vehicle)
+    if vehicle.state == 1 then
+        QBCore.Functions.SpawnVehicle(vehicle.model, function(veh)
+            SetVehicleNumberPlateText(veh, vehicle.plate)
+            SetEntityHeading(veh, QBBoatshop.Docks[CurrentDock].coords.put.w)
+            exports['LegacyFuel']:SetFuel(veh, vehicle.fuel)
+            QBCore.Functions.Notify("vehicle Out: Fuel: "..currentFuel.. "%", "primary", 4500)
+            CloseMenu()
+            TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+            TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
+            SetVehicleEngineOn(veh, true, true)
+            TriggerServerEvent('qb-diving:server:SetBoatState', QBCore.Functions.GetPlate(veh), 0, CurrentDock, 100)
+        end, QBBoatshop.Docks[CurrentDock].coords.put, true)
+    else
+        QBCore.Functions.Notify("The boat is not in the boathouse", "error", 4500)
+    end
+end
+
+function MenuBoatDepot()
+    ClearMenu()
+    QBCore.Functions.TriggerCallback("qb-diving:server:GetDepotBoats", function(result)
+        ped = PlayerPedId();
+        MenuTitle = "My Vehicles :"
+
+        if result == nil then
+            QBCore.Functions.Notify("You have no vehicles in this Depot", "error", 5000)
+            CloseMenu()
+        else
+            -- Menu.addButton(QBBoatshop.Depots[CurrentDock].label, "yeet", QBBoatshop.Depots[CurrentDock].label)
+
+            for k, v in pairs(result) do
+                currentFuel = v.fuel
+                state = "In Boathouse"
+
+                if v.state == 0 then
+                    state = "In Depot"
+                end
+
+                Menu.addButton(QBBoatshop.ShopBoats[v.model]["label"], "TakeOutDepotBoat", v, state, "Fuel: "..currentFuel.. "%")
+            end
+        end
+
+        Menu.addButton("Back", "MenuGarage", nil)
+    end)
+end
+
+function VehicleList()
+    ClearMenu()
+    QBCore.Functions.TriggerCallback("qb-diving:server:GetMyBoats", function(result)
+        ped = PlayerPedId();
+        MenuTitle = "My Vehicles :"
+
+        if result == nil then
+            QBCore.Functions.Notify("You have no vehicles in this Boathouse", "error", 5000)
+            CloseMenu()
+        else
+            -- Menu.addButton(QBBoatshop.Docks[CurrentDock].label, "yeet", QBBoatshop.Docks[CurrentDock].label)
+
+            for k, v in pairs(result) do
+                currentFuel = v.fuel
+                if v.state == 0 then
+                    state = "In Depot"
+                elseif v.state == 1 then
+                    state = "In Boathouse"
+                end
+
+                Menu.addButton(QBBoatshop.ShopBoats[v.model]["label"], "TakeOutVehicle", v, state, "Fuel: "..currentFuel.. "%")
+            end
+        end
+
+        Menu.addButton("Back", "MenuGarage", nil)
+    end, CurrentDock)
+end
+
+function MenuGarage()
+    ped = PlayerPedId();
+    MenuTitle = "Garage"
+    ClearMenu()
+    Menu.addButton("My Vehicles", "VehicleList", nil)
+    Menu.addButton("Close Menu", "CloseMenu", nil)
+end
+
+function CloseMenu()
+    Menu.hidden = true
+    CurrentDock = nil
+    ClearMenu()
+end
+
+function ClearMenu()
+	Menu.GUI = {}
+	Menu.buttonCount = 0
+	Menu.selection = 0
+end
+
+local function RemoveVehicle()
+    local ped = PlayerPedId()
+    local Boat = IsPedInAnyBoat(ped)
+
+    if Boat then
+        local CurVeh = GetVehiclePedIsIn(ped)
+        local totalFuel = exports['LegacyFuel']:GetFuel(CurVeh)
+        TriggerServerEvent('qb-diving:server:SetBoatState', QBCore.Functions.GetPlate(CurVeh), 1, ClosestDock, totalFuel)
+
+        QBCore.Functions.DeleteVehicle(CurVeh)
+        SetEntityCoords(ped, QBBoatshop.Docks[ClosestDock].coords.take.x, QBBoatshop.Docks[ClosestDock].coords.take.y, QBBoatshop.Docks[ClosestDock].coords.take.z)
+    end
+end
+
+-- Events
+
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     PlayerJob = JobInfo
     if PlayerJob.name == "police" then
@@ -20,6 +145,8 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
         EndTextCommandSetBlipName(PoliceBlip)
     end
 end)
+
+-- Threads
 
 CreateThread(function()
     while true do
@@ -180,161 +307,28 @@ CreateThread(function()
     end
 end)
 
-function Trim(value)
-	if value then
-		return (string.gsub(value, "^%s*(.-)%s*$", "%1"))
-	else
-		return nil
-	end
-end
-
-function RemoveVehicle()
-    local ped = PlayerPedId()
-    local Boat = IsPedInAnyBoat(ped)
-
-    if Boat then
-        local CurVeh = GetVehiclePedIsIn(ped)
-        local totalFuel = exports['LegacyFuel']:GetFuel(CurVeh)
-        TriggerServerEvent('qb-diving:server:SetBoatState', Trim(QBCore.Functions.GetPlate(CurVeh)), 1, ClosestDock, totalFuel)
-
-        QBCore.Functions.DeleteVehicle(CurVeh)
-        SetEntityCoords(ped, QBBoatshop.Docks[ClosestDock].coords.take.x, QBBoatshop.Docks[ClosestDock].coords.take.y, QBBoatshop.Docks[ClosestDock].coords.take.z)
-    end
-end
-
 CreateThread(function()
     for k, v in pairs(QBBoatshop.Docks) do
-        DockGarage = AddBlipForCoord(v.coords.put.x, v.coords.put.y, v.coords.put.z)
-
+        local DockGarage = AddBlipForCoord(v.coords.put.x, v.coords.put.y, v.coords.put.z)
         SetBlipSprite (DockGarage, 410)
         SetBlipDisplay(DockGarage, 4)
         SetBlipScale  (DockGarage, 0.8)
         SetBlipAsShortRange(DockGarage, true)
         SetBlipColour(DockGarage, 3)
-
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentSubstringPlayerName(v.label)
         EndTextCommandSetBlipName(DockGarage)
     end
 
     for k, v in pairs(QBBoatshop.Depots) do
-        BoatDepot = AddBlipForCoord(v.coords.take.x, v.coords.take.y, v.coords.take.z)
-
+        local BoatDepot = AddBlipForCoord(v.coords.take.x, v.coords.take.y, v.coords.take.z)
         SetBlipSprite (BoatDepot, 410)
         SetBlipDisplay(BoatDepot, 4)
         SetBlipScale  (BoatDepot, 0.8)
         SetBlipAsShortRange(BoatDepot, true)
         SetBlipColour(BoatDepot, 3)
-
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentSubstringPlayerName(v.label)
         EndTextCommandSetBlipName(BoatDepot)
     end
 end)
-
-function MenuBoatDepot()
-    ClearMenu()
-    QBCore.Functions.TriggerCallback("qb-diving:server:GetDepotBoats", function(result)
-        ped = PlayerPedId();
-        MenuTitle = "My Vehicles :"
-
-        if result == nil then
-            QBCore.Functions.Notify("You have no vehicles in this Depot", "error", 5000)
-            CloseMenu()
-        else
-            -- Menu.addButton(QBBoatshop.Depots[CurrentDock].label, "yeet", QBBoatshop.Depots[CurrentDock].label)
-
-            for k, v in pairs(result) do
-                currentFuel = v.fuel
-                state = "In Boathouse"
-
-                if v.state == 0 then
-                    state = "In Depot"
-                end
-
-                Menu.addButton(QBBoatshop.ShopBoats[v.model]["label"], "TakeOutDepotBoat", v, state, "Fuel: "..currentFuel.. "%")
-            end
-        end
-
-        Menu.addButton("Back", "MenuGarage", nil)
-    end)
-end
-
-function VehicleList()
-    ClearMenu()
-    QBCore.Functions.TriggerCallback("qb-diving:server:GetMyBoats", function(result)
-        ped = PlayerPedId();
-        MenuTitle = "My Vehicles :"
-
-        if result == nil then
-            QBCore.Functions.Notify("You have no vehicles in this Boathouse", "error", 5000)
-            CloseMenu()
-        else
-            -- Menu.addButton(QBBoatshop.Docks[CurrentDock].label, "yeet", QBBoatshop.Docks[CurrentDock].label)
-
-            for k, v in pairs(result) do
-                currentFuel = v.fuel
-                if v.state == 0 then
-                    state = "In Depot"
-                elseif v.state == 1 then
-                    state = "In Boathouse"
-                end
-
-                Menu.addButton(QBBoatshop.ShopBoats[v.model]["label"], "TakeOutVehicle", v, state, "Fuel: "..currentFuel.. "%")
-            end
-        end
-
-        Menu.addButton("Back", "MenuGarage", nil)
-    end, CurrentDock)
-end
-
-function TakeOutVehicle(vehicle)
-    if vehicle.state == 1 then
-        QBCore.Functions.SpawnVehicle(vehicle.model, function(veh)
-            SetVehicleNumberPlateText(veh, vehicle.plate)
-            SetEntityHeading(veh, QBBoatshop.Docks[CurrentDock].coords.put.w)
-            exports['LegacyFuel']:SetFuel(veh, vehicle.fuel)
-            QBCore.Functions.Notify("vehicle Out: Fuel: "..currentFuel.. "%", "primary", 4500)
-            CloseMenu()
-            TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-            TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-            SetVehicleEngineOn(veh, true, true)
-            TriggerServerEvent('qb-diving:server:SetBoatState', Trim(QBCore.Functions.GetPlate(veh)), 0, CurrentDock, 100)
-        end, QBBoatshop.Docks[CurrentDock].coords.put, true)
-    else
-        QBCore.Functions.Notify("The boat is not in the boathouse", "error", 4500)
-    end
-end
-
-function TakeOutDepotBoat(vehicle)
-    QBCore.Functions.SpawnVehicle(vehicle.model, function(veh)
-        SetVehicleNumberPlateText(veh, vehicle.plate)
-        SetEntityHeading(veh, QBBoatshop.Depots[CurrentDock].coords.put.w)
-        exports['LegacyFuel']:SetFuel(veh, vehicle.fuel)
-        QBCore.Functions.Notify("Vehicle Off: Fuel: "..currentFuel.. "%", "primary", 4500)
-        CloseMenu()
-        TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-        TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-        SetVehicleEngineOn(veh, true, true)
-    end, QBBoatshop.Depots[CurrentDock].coords.put, true)
-end
-
-function MenuGarage()
-    ped = PlayerPedId();
-    MenuTitle = "Garage"
-    ClearMenu()
-    Menu.addButton("My Vehicles", "VehicleList", nil)
-    Menu.addButton("Close Menu", "CloseMenu", nil)
-end
-
-function CloseMenu()
-    Menu.hidden = true
-    CurrentDock = nil
-    ClearMenu()
-end
-
-function ClearMenu()
-	Menu.GUI = {}
-	Menu.buttonCount = 0
-	Menu.selection = 0
-end

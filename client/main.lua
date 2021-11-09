@@ -1,5 +1,24 @@
-isLoggedIn = false
+QBCore = exports['qb-core']:GetCoreObject()
 PlayerJob = {}
+
+-- Functions
+
+function DrawText3D(x, y, z, text) -- Used Globally
+	SetTextScale(0.35, 0.35)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextColour(255, 255, 255, 215)
+    SetTextEntry("STRING")
+    SetTextCentre(true)
+    AddTextComponentString(text)
+    SetDrawOrigin(x,y,z, 0)
+    DrawText(0.0, 0.0)
+    local factor = (string.len(text)) / 370
+    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
+    ClearDrawOrigin()
+end
+
+-- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetBusyDocks', function(Docks)
@@ -12,8 +31,6 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     end)
 
     PlayerJob = QBCore.Functions.GetPlayerData().job
-
-    isLoggedIn = true
 
     if PlayerJob.name == "police" then
         if PoliceBlip ~= nil then
@@ -35,27 +52,12 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         SetBlipScale(PoliceBlip, 0.8)
         SetBlipAsShortRange(PoliceBlip, true)
         SetBlipColour(PoliceBlip, 29)
-    
+
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentSubstringPlayerName("Police boat")
         EndTextCommandSetBlipName(PoliceBlip)
     end
 end)
-
-DrawText3D = function(x, y, z, text)
-	SetTextScale(0.35, 0.35)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
-    SetTextCentre(true)
-    AddTextComponentString(text)
-    SetDrawOrigin(x,y,z, 0)
-    DrawText(0.0, 0.0)
-    local factor = (string.len(text)) / 370
-    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
-    ClearDrawOrigin()
-end
 
 RegisterNetEvent('qb-diving:client:UseJerrycan', function()
     local ped = PlayerPedId()
