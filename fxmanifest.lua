@@ -19,3 +19,5 @@ client_scripts {
     'client/gui.lua',
     'client/shop.lua'
 }
+
+lua54 'yes'

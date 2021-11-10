@@ -151,7 +151,7 @@ end)
 CreateThread(function()
     while true do
         Wait(3)
-        if isLoggedIn then
+        if LocalPlayer.state.isLoggedIn then
             local pos = GetEntityCoords(PlayerPedId())
             if PlayerJob.name == "police" then
                 local dist = #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z))
@@ -184,7 +184,7 @@ end)
 CreateThread(function()
     while true do
         Wait(3)
-        if isLoggedIn then
+        if LocalPlayer.state.isLoggedIn then
             local pos = GetEntityCoords(PlayerPedId())
             if PlayerJob.name == "police" then
                 local dist = #(pos - vector3(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z))
