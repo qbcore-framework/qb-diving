@@ -148,8 +148,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?',
-        {Player.PlayerData.citizenid, dock})
+    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?', {Player.PlayerData.citizenid, dock})
     if result[1] ~= nil then
         cb(result)
     else
@@ -160,8 +159,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?',
-        {Player.PlayerData.citizenid, 0})
+    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?', {Player.PlayerData.citizenid, 0})
     if result[1] ~= nil then
         cb(result)
     else
