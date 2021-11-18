@@ -207,94 +207,95 @@ end)
 
 CreateThread(function()
     while true do
+        local sleep = 1000
+        if LocalPlayer.state.isLoggedIn then
+            local inRange = false
+            local Ped = PlayerPedId()
+            local Pos = GetEntityCoords(Ped)
 
-        local inRange = false
-        local Ped = PlayerPedId()
-        local Pos = GetEntityCoords(Ped)
+            for k, v in pairs(QBBoatshop.Docks) do
+                local TakeDistance = #(Pos - vector3(v.coords.take.x, v.coords.take.y, v.coords.take.z))
 
-        for k, v in pairs(QBBoatshop.Docks) do
-            local TakeDistance = #(Pos - vector3(v.coords.take.x, v.coords.take.y, v.coords.take.z))
+                if TakeDistance < 50 then
+                    ClosestDock = k
+                    inRange = true
+                    PutDistance = #(Pos - vector3(v.coords.put.x, v.coords.put.y, v.coords.put.z))
 
-            if TakeDistance < 50 then
-                ClosestDock = k
-                inRange = true
-                PutDistance = #(Pos - vector3(v.coords.put.x, v.coords.put.y, v.coords.put.z))
+                    local inBoat = IsPedInAnyBoat(Ped)
 
-                local inBoat = IsPedInAnyBoat(Ped)
-
-                if inBoat then
-                    DrawMarker(35, v.coords.put.x, v.coords.put.y, v.coords.put.z + 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.7, 1.7, 1.7, 255, 55, 15, 255, false, false, false, true, false, false, false)
-                    if PutDistance < 2 then
-                        if inBoat then
-                            DrawText3D(v.coords.put.x, v.coords.put.y, v.coords.put.z, '~g~E~w~ - Remove boat')
-                            if IsControlJustPressed(0, 38) then
-                                RemoveVehicle()
+                    if inBoat then
+                        DrawMarker(35, v.coords.put.x, v.coords.put.y, v.coords.put.z + 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.7, 1.7, 1.7, 255, 55, 15, 255, false, false, false, true, false, false, false)
+                        if PutDistance < 2 then
+                            if inBoat then
+                                DrawText3D(v.coords.put.x, v.coords.put.y, v.coords.put.z, '~g~E~w~ - Remove boat')
+                                if IsControlJustPressed(0, 38) then
+                                    RemoveVehicle()
+                                end
                             end
                         end
                     end
-                end
 
-                if not inBoat then
-                    DrawMarker(2, v.coords.take.x, v.coords.take.y, v.coords.take.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.5, -0.30, 15, 255, 55, 255, false, false, false, true, false, false, false)
-                    if TakeDistance < 2 then
-                        DrawText3D(v.coords.take.x, v.coords.take.y, v.coords.take.z, '~g~E~w~ - Take the boat')
-                        if IsControlJustPressed(1, 177) and not Menu.hidden then
-                            CloseMenu()
-                            PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
-                            CurrentDock = nil
-                        elseif IsControlJustPressed(0, 38) and Menu.hidden then
-                            MenuGarage()
-                            Menu.hidden = not Menu.hidden
-                            CurrentDock = k
+                    if not inBoat then
+                        DrawMarker(2, v.coords.take.x, v.coords.take.y, v.coords.take.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.5, -0.30, 15, 255, 55, 255, false, false, false, true, false, false, false)
+                        if TakeDistance < 2 then
+                            DrawText3D(v.coords.take.x, v.coords.take.y, v.coords.take.z, '~g~E~w~ - Take the boat')
+                            if IsControlJustPressed(1, 177) then
+                                CloseMenu()
+                                PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
+                                CurrentDock = nil
+                            elseif IsControlJustPressed(0, 38) then
+                                CurrentDock = k
+                                MenuGarage()
+
+                            end
+
                         end
-                        Menu.renderGUI()
+                    end
+                elseif TakeDistance > 51 then
+                    if ClosestDock ~= nil then
+                        ClosestDock = nil
                     end
                 end
-            elseif TakeDistance > 51 then
-                if ClosestDock ~= nil then
-                    ClosestDock = nil
-                end
             end
-        end
 
-        for k, v in pairs(QBBoatshop.Depots) do
-            local TakeDistance = #(Pos - vector3(v.coords.take.x, v.coords.take.y, v.coords.take.z))
+            for k, v in pairs(QBBoatshop.Depots) do
+                local TakeDistance = #(Pos - vector3(v.coords.take.x, v.coords.take.y, v.coords.take.z))
 
-            if TakeDistance < 50 then
-                ClosestDock = k
-                inRange = true
-                PutDistance = #(Pos - vector3(v.coords.put.x, v.coords.put.y, v.coords.put.z))
+                if TakeDistance < 50 then
+                    ClosestDock = k
+                    inRange = true
+                    PutDistance = #(Pos - vector3(v.coords.put.x, v.coords.put.y, v.coords.put.z))
 
-                local inBoat = IsPedInAnyBoat(Ped)
+                    local inBoat = IsPedInAnyBoat(Ped)
 
-                if not inBoat then
-                    DrawMarker(2, v.coords.take.x, v.coords.take.y, v.coords.take.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.5, -0.30, 15, 255, 55, 255, false, false, false, true, false, false, false)
-                    if TakeDistance < 2 then
-                        DrawText3D(v.coords.take.x, v.coords.take.y, v.coords.take.z, '~g~E~w~ -Boat storage')
-                        if IsControlJustPressed(1, 177) and not Menu.hidden then
-                            CloseMenu()
-                            PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
-                            CurrentDock = nil
-                        elseif IsControlJustPressed(0, 38) and Menu.hidden then
-                            MenuBoatDepot()
-                            Menu.hidden = not Menu.hidden
-                            CurrentDock = k
+                    if not inBoat then
+                        DrawMarker(2, v.coords.take.x, v.coords.take.y, v.coords.take.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.5, -0.30, 15, 255, 55, 255, false, false, false, true, false, false, false)
+                        if TakeDistance < 2 then
+                            DrawText3D(v.coords.take.x, v.coords.take.y, v.coords.take.z, '~g~E~w~ -Boat storage')
+                            if IsControlJustPressed(1, 177) then
+                                CloseMenu()
+                                PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
+                                CurrentDock = nil
+                            elseif IsControlJustPressed(0, 38)then
+                                CurrentDock = k
+                                MenuBoatDepot()
+                            end
+
                         end
-                        Menu.renderGUI()
+                    end
+                elseif TakeDistance > 51 then
+                    if ClosestDock ~= nil then
+                        ClosestDock = nil
                     end
                 end
-            elseif TakeDistance > 51 then
-                if ClosestDock ~= nil then
-                    ClosestDock = nil
-                end
+            end
+
+            sleep = 5
+            if not inRange then
+                sleep = 1000
             end
         end
-
-        if not inRange then
-            Wait(1000)
-        end
-
-        Wait(4)
+        Wait(sleep)
     end
 end)
 

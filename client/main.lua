@@ -1,5 +1,6 @@
 QBCore = exports['qb-core']:GetCoreObject()
 PlayerJob = {}
+local policeThreadRunning = false
 
 -- Functions
 
@@ -16,6 +17,69 @@ function DrawText3D(x, y, z, text) -- Used Globally
     local factor = (string.len(text)) / 370
     DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
     ClearDrawOrigin()
+end
+
+local function RunPoliceThread()
+    if not policeThreadRunning then
+        policeThreadRunning = true
+        CreateThread(function()
+            while LocalPlayer.state.isLoggedIn and PlayerJob.name == "police" do
+                local sleep = 1000
+                local inRange = false
+
+                local pos = GetEntityCoords(PlayerPedId())
+                local dist = #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z))
+                local dist2 = #(pos - vector3(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z))
+
+                if dist < 10 then
+                    inRange = true
+                    DrawMarker(2, QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
+                    if #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z)) < 1.5 then
+                        QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, "~g~E~w~ - Take Boat")
+                        if IsControlJustReleased(0, 38) then
+                            local coords = QBBoatshop.PoliceBoatSpawn
+                            QBCore.Functions.SpawnVehicle("predator", function(veh)
+                                SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
+                                SetEntityHeading(veh, coords.w)
+                                exports['LegacyFuel']:SetFuel(veh, 100.0)
+                                TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+                                TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
+                                SetVehicleEngineOn(veh, true, true)
+                            end, coords, true)
+                        end
+                    end
+
+                end
+
+
+                if dist2 < 10 then
+                    inRange = true
+                    DrawMarker(2, QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
+                    if #(pos - vector3(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z)) < 1.5 then
+                        QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z, "~g~E~w~ - Take Boat")
+                        if IsControlJustReleased(0, 38) then
+                            local coords = QBBoatshop.PoliceBoatSpawn2
+                            QBCore.Functions.SpawnVehicle("predator", function(veh)
+                                SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
+                                SetEntityHeading(veh, coords.w)
+                                exports['LegacyFuel']:SetFuel(veh, 100.0)
+                                TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+                                TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
+                                SetVehicleEngineOn(veh, true, true)
+                            end, coords, true)
+                        end
+                    end
+                end
+
+                sleep = 5
+                if not inRange then
+                    sleep = 1000
+                end
+                Wait(sleep)
+            end
+            policeThreadRunning = false
+        end)
+    end
 end
 
 -- Events
@@ -56,6 +120,40 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentSubstringPlayerName("Police boat")
         EndTextCommandSetBlipName(PoliceBlip)
+
+        RunPoliceThread()
+    end
+end)
+
+RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+    PlayerJob = JobInfo
+
+    if JobInfo.name == "police" then
+        if PoliceBlip ~= nil then
+            RemoveBlip(PoliceBlip)
+        end
+        PoliceBlip = AddBlipForCoord(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z)
+        SetBlipSprite(PoliceBlip, 410)
+        SetBlipDisplay(PoliceBlip, 4)
+        SetBlipScale(PoliceBlip, 0.8)
+        SetBlipAsShortRange(PoliceBlip, true)
+        SetBlipColour(PoliceBlip, 29)
+
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentSubstringPlayerName("Police boat")
+        EndTextCommandSetBlipName(PoliceBlip)
+        PoliceBlip = AddBlipForCoord(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z)
+        SetBlipSprite(PoliceBlip, 410)
+        SetBlipDisplay(PoliceBlip, 4)
+        SetBlipScale(PoliceBlip, 0.8)
+        SetBlipAsShortRange(PoliceBlip, true)
+        SetBlipColour(PoliceBlip, 29)
+
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentSubstringPlayerName("Police boat")
+        EndTextCommandSetBlipName(PoliceBlip)
+
+        RunPoliceThread()
     end
 end)
 
