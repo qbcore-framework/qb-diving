@@ -50,7 +50,6 @@ local function SetClosestBerthBoat()
 end
 
 -- Events
-
 RegisterNetEvent('qb-diving:client:BuyBoat', function(boatModel, plate)
     DoScreenFadeOut(250)
     Wait(250)
@@ -61,7 +60,7 @@ RegisterNetEvent('qb-diving:client:BuyBoat', function(boatModel, plate)
         SetEntityHeading(veh, QBBoatshop.SpawnVehicle.w)
         TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
     end, QBBoatshop.SpawnVehicle, false)
-    SetTimeout(1000, function()
+        SetTimeout(1000, function()
         DoScreenFadeIn(250)
     end)
 end)
