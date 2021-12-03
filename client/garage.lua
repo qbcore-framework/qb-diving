@@ -159,19 +159,19 @@ end)
 RegisterNetEvent('diving:client:TakeOutBoathouse', function(data)
     local ped = PlayerPedId()
     local pos = GetEntityCoords(ped)
-    local putVec3 = vector3(QBBoatshop.Depots[CurrentDock].coords.take.x, QBBoatshop.Depots[CurrentDock].coords.take.y, QBBoatshop.Depots[CurrentDock].coords.take.z)
+    local putVec3 = vector3(QBBoatshop.Docks[CurrentDock].coords.take.x, QBBoatshop.Docks[CurrentDock].coords.take.y, QBBoatshop.Docks[CurrentDock].coords.take.z)
     if #(pos - putVec3) <= 1 then
         local vehicle = data.boat
         QBCore.Functions.SpawnVehicle(vehicle.model, function(veh)
             SetVehicleNumberPlateText(veh, vehicle.plate)
-            SetEntityHeading(veh, QBBoatshop.Depots[CurrentDock].coords.put.w)
+            SetEntityHeading(veh, QBBoatshop.Docks[CurrentDock].coords.put.w)
             exports['LegacyFuel']:SetFuel(veh, vehicle.fuel)
             QBCore.Functions.Notify("Vehicle Off: Fuel: "..currentFuel.. "%", "primary", 4500)
             CloseMenu()
             TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
             TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
             SetVehicleEngineOn(veh, true, true)
-        end, QBBoatshop.Depots[CurrentDock].coords.put, true)
+        end, QBBoatshop.Docks[CurrentDock].coords.put, true)
     else
         QBCore.Functions.Notify('You are to far away', 'error')
     end
