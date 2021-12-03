@@ -226,7 +226,7 @@ CreateThread(function()
                         DrawMarker(35, v.coords.put.x, v.coords.put.y, v.coords.put.z + 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.7, 1.7, 1.7, 255, 55, 15, 255, false, false, false, true, false, false, false)
                         if PutDistance < 2 then
                             if inBoat then
-                                DrawText3D(v.coords.put.x, v.coords.put.y, v.coords.put.z, '~g~E~w~ - Remove boat')
+                                DrawText3D(v.coords.put.x, v.coords.put.y, v.coords.put.z, '~g~E~w~ - Store Boat')
                                 if IsControlJustPressed(0, 38) then
                                     RemoveVehicle()
                                 end
@@ -237,7 +237,7 @@ CreateThread(function()
                     if not inBoat then
                         DrawMarker(2, v.coords.take.x, v.coords.take.y, v.coords.take.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.5, -0.30, 15, 255, 55, 255, false, false, false, true, false, false, false)
                         if TakeDistance < 2 then
-                            DrawText3D(v.coords.take.x, v.coords.take.y, v.coords.take.z, '~g~E~w~ - Take the boat')
+                            DrawText3D(v.coords.take.x, v.coords.take.y, v.coords.take.z, '~g~E~w~ - Boat Garage')
                             if IsControlJustPressed(1, 177) then
                                 CloseMenu()
                                 PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)

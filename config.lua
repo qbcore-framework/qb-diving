@@ -13,7 +13,7 @@ QBBoatshop.Docks = {
             put = vector4(-793.58, -1501.4, 0.12, 111.5)
         }
     },
-    ["paletto"] = {
+    ["paleto"] = {
         label = "Paleto Boathouse",
         coords = {
             take = vector3(-277.46, 6637.2, 7.48),
