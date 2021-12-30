@@ -44,18 +44,10 @@ RegisterNetEvent('qb-diving:server:TakeCoral', function(Area, Coral, Bool)
     TriggerClientEvent('qb-diving:server:UpdateCoral', -1, Area, Coral, Bool)
 end)
 
-RegisterNetEvent('qb-diving:server:RemoveGear', function()
+RegisterNetEvent('qb-diving:server:RemoveGear', function(CurrentAir)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-
-    Player.Functions.RemoveItem("diving_gear", 1)
-    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "remove")
-end)
-
-RegisterNetEvent('qb-diving:server:GiveBackGear', function()
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-
-    Player.Functions.AddItem("diving_gear", 1)
-    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "add")
+    local Info = {air = CurrentAir}
+    Player.Functions.AddItem('diving_gear', 1, false, Info, true)
+	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "add")
 end)
