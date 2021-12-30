@@ -1,3 +1,9 @@
+local MaskModel = `p_d_scuba_mask_s`
+local TankModel = `p_s_scuba_tank_s`
+local ScubaProps = {}
+local hasOxygenTank = false
+local CurrentAir = nil
+
 local CurrentDivingLocation = {
     Area = 0,
     Blip = {
@@ -6,13 +12,14 @@ local CurrentDivingLocation = {
     }
 }
 
-local currentGear = {
-    mask = 0,
-    tank = 0,
-    enabled = false
-}
-
 -- Functions
+
+local function RequestModelHash(Model)
+   RequestModel(Model)
+	 while not HasModelLoaded(Model) do
+		Wait(1)
+   end
+end
 
 local function loadAnimDict(dict)
     while not HasAnimDictLoaded(dict) do
@@ -34,20 +41,6 @@ local function CallCops()
     if Call == Chance then
         TriggerServerEvent('qb-diving:server:CallCops', Coords)
     end
-end
-
-local function DeleteGear()
-	if currentGear.mask ~= 0 then
-        DetachEntity(currentGear.mask, 0, 1)
-        DeleteEntity(currentGear.mask)
-		currentGear.mask = 0
-    end
-
-	if currentGear.tank ~= 0 then
-        DetachEntity(currentGear.tank, 0, 1)
-        DeleteEntity(currentGear.tank)
-		currentGear.tank = 0
-	end
 end
 
 local function GearAnim()
@@ -125,64 +118,82 @@ RegisterNetEvent('qb-diving:server:CallCops', function(Coords, msg)
     end
 end)
 
-RegisterNetEvent('qb-diving:client:UseGear', function(bool)
-    if bool then
-        GearAnim()
-        QBCore.Functions.Progressbar("equip_gear", "Put on a diving suit", 5000, false, true, {}, {}, {}, {}, function() -- Done
-            DeleteGear()
-            local maskModel = `p_d_scuba_mask_s`
-            local tankModel = `p_s_scuba_tank_s`
-
-            RequestModel(tankModel)
-            while not HasModelLoaded(tankModel) do
-                Wait(1)
-            end
-            TankObject = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
-            local bone1 = GetPedBoneIndex(PlayerPedId(), 24818)
-            AttachEntityToEntity(TankObject, PlayerPedId(), bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-            currentGear.tank = TankObject
-
-            RequestModel(maskModel)
-            while not HasModelLoaded(maskModel) do
-                Wait(1)
-            end
-
-            MaskObject = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
-            local bone2 = GetPedBoneIndex(PlayerPedId(), 12844)
-            AttachEntityToEntity(MaskObject, PlayerPedId(), bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-            currentGear.mask = MaskObject
-
-            SetEnableScuba(PlayerPedId(), true)
-            SetPedMaxTimeUnderwater(PlayerPedId(), 2000.00)
-            currentGear.enabled = true
-            TriggerServerEvent('qb-diving:server:RemoveGear')
-            ClearPedTasks(PlayerPedId())
-            TriggerEvent('chatMessage', "SYSTEM", "error", "/divingsuit to take off your diving suit")
-        end)
+RegisterNetEvent('qb-diving:client:UseGear', function(AirAmount)
+    if not hasOxygenTank and AirAmount > 10 then
+		LocalPlayer.state:set("inv_busy", true, true) -- Busy
+		GearAnim()
+		QBCore.Functions.Progressbar("equip_gear", "Put on a diving suit", 5000, false, true, {}, {}, {}, {}, function() -- Done
+			CurrentAir = AirAmount
+			hasOxygenTank = true
+			RequestModelHash(TankModel)
+			RequestModelHash(MaskModel)
+			local TankObject = CreateObject(TankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+			AttachEntityToEntity(TankObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 24818), -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+			ScubaProps[#ScubaProps+1] = TankObject
+			local MaskObject = CreateObject(MaskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+			AttachEntityToEntity(MaskObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 12844), 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+			ScubaProps[#ScubaProps+1] = MaskObject
+			SetPedDiesInWater(PlayerPedId(), false)
+			SetEnableScuba(PlayerPedId(), true)
+			SetPedMaxTimeUnderwater(PlayerPedId(), 2000.00)
+			TriggerServerEvent("QBCore:Server:RemoveItem", "diving_gear", 1)
+			TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items["diving_gear"], "remove")
+			LocalPlayer.state:set("inv_busy", false, true) -- Not Busy
+			ClearPedTasks(PlayerPedId())
+			TriggerEvent('chatMessage', "SYSTEM", "error", "/divingsuit to take off your diving suit")
+		end)
     else
-        if currentGear.enabled then
-            GearAnim()
-            QBCore.Functions.Progressbar("remove_gear", "Pull out a diving suit ..", 5000, false, true, {}, {}, {}, {}, function() -- Done
-                DeleteGear()
-
-                SetEnableScuba(PlayerPedId(), false)
-                SetPedMaxTimeUnderwater(PlayerPedId(), 1.00)
-                currentGear.enabled = false
-                TriggerServerEvent('qb-diving:server:GiveBackGear')
-                ClearPedTasks(PlayerPedId())
-                QBCore.Functions.Notify('You took your wetsuit off')
-            end)
-        else
-            QBCore.Functions.Notify('You are not wearing a diving gear ..', 'error')
-        end
+        QBCore.Functions.Notify("Action not possible..", "error")
     end
 end)
 
-RegisterNetEvent('qb-diving:client:RemoveGear', function()	--Add event to call externally
-    TriggerEvent('qb-diving:client:UseGear', false)
+RegisterNetEvent('qb-diving:client:RemoveGear', function()
+    if hasOxygenTank then
+		GearAnim()
+		QBCore.Functions.Progressbar("remove_gear", "Pull out a diving suit ..", 5000, false, true, {}, {}, {}, {}, function() -- Done
+            for k, v in pairs(ScubaProps) do
+                NetworkRequestControlOfEntity(v)
+                SetEntityAsMissionEntity(v, true, true)
+                DetachEntity(v, 1, 1)
+                DeleteEntity(v)
+                DeleteObject(v)
+            end
+            SetPedDiesInWater(PlayerPedId(), true)
+            SetEnableScuba(PlayerPedId(), false)
+			SetPedMaxTimeUnderwater(PlayerPedId(), 1.00)
+            TriggerServerEvent('qb-diving:server:RemoveGear', CurrentAir)
+			ClearPedTasks(PlayerPedId())
+            CurrentAir, hasOxygenTank = nil, false
+        end)
+	else
+		QBCore.Functions.Notify('You are not wearing a diving gear ..', 'error')
+	end
 end)
 
 -- Threads
+
+CreateThread(function()
+    while true do
+        Wait(4)
+        if LocalPlayer.state.isLoggedIn then
+            if hasOxygenTank then
+                if CurrentAir > 10 then
+                    CurrentAir = CurrentAir - 10
+                    Wait(30000)
+                    if hasOxygenTank then
+                        if CurrentAir < 10 then
+                            SetPedDiesInWater(PlayerPedId(), true)
+                            SetEnableScuba(PlayerPedId(), false)
+                            QBCore.Functions.Notify("Your air tank is empty you are drowning..", "error")
+                        end
+                    end
+                end
+            end
+        else
+            Wait(1500)
+        end
+    end
+end)
 
 CreateThread(function()
     while true do
@@ -240,3 +251,9 @@ CreateThread(function()
         Wait(3)
     end
 end)
+
+local function hasOxygenTankOn()
+    return hasOxygenTank
+end
+
+exports('hasOxygenTankOn', hasOxygenTankOn)
