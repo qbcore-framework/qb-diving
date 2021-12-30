@@ -174,12 +174,14 @@ QBCore.Functions.CreateUseableItem("jerry_can", function(source, item)
 end)
 
 QBCore.Functions.CreateUseableItem("diving_gear", function(source, item)
-    TriggerClientEvent("qb-diving:client:UseGear", source, true)
+	local Player = QBCore.Functions.GetPlayer(source)
+	if Player.Functions.GetItemBySlot(item.slot) ~= nil then
+        TriggerClientEvent('qb-diving:client:UseGear', source, item.info.air)
+    end
 end)
 
 -- Commands
 
 QBCore.Commands.Add("divingsuit", "Take off your diving suit", {}, false, function(source, args)
-    local Player = QBCore.Functions.GetPlayer(source)
-    TriggerClientEvent("qb-diving:client:UseGear", source, false)
+    TriggerClientEvent('qb-diving:client:RemoveGear', source)
 end)
