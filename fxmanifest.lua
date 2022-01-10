@@ -7,7 +7,8 @@ version '1.0.0'
 shared_script 'config.lua'
 
 server_scripts {
-	'server/main.lua',
+    '@oxmysql/lib/MySQL.lua',
+    'server/main.lua',
     'server/diving.lua'
 }
 
