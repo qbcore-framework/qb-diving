@@ -4,7 +4,7 @@ local AvailableCoral = {}
 -- Functions
 
 local function InsertBoat(boatModel, Player, plate)
-    exports.oxmysql:insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?, ?, ?)', {Player.PlayerData.citizenid, boatModel, plate})
+    MySQL.Async.insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?, ?, ?)', {Player.PlayerData.citizenid, boatModel, plate})
 end
 
 local function GetItemPrice(Item, price)
@@ -82,9 +82,9 @@ end)
 RegisterNetEvent('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:scalarSync('SELECT 1 FROM player_boats WHERE plate = ?', {plate})
+    local result = MySQL.Sync.fetchScalar('SELECT 1 FROM player_boats WHERE plate = ?', {plate})
     if result ~= nil then
-        exports.oxmysql:execute(
+        MySQL.Async.execute(
             'UPDATE player_boats SET state = ?, boathouse = ?, fuel = ? WHERE plate = ? AND citizenid = ?',
             {state, boathouse, fuel, plate, Player.PlayerData.citizenid})
     end
@@ -148,7 +148,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?', {Player.PlayerData.citizenid, dock})
+    local result = MySQL.Sync.fetchAll('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?', {Player.PlayerData.citizenid, dock})
     if result[1] ~= nil then
         cb(result)
     else
@@ -159,7 +159,7 @@ end)
 QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?', {Player.PlayerData.citizenid, 0})
+    local result = MySQL.Sync.fetchAll('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?', {Player.PlayerData.citizenid, 0})
     if result[1] ~= nil then
         cb(result)
     else
