@@ -4,7 +4,20 @@ local AvailableCoral = {}
 -- Functions
 
 local function InsertBoat(boatModel, Player, plate)
-    exports.oxmysql:insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?, ?, ?)', {Player.PlayerData.citizenid, boatModel, plate})
+    local vehicle = boatModel
+    local cid = Player.PlayerData.citizenid
+    MySQL.Async.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
+        Player.PlayerData.license,
+        cid,
+        vehicle,
+        GetHashKey(vehicle),
+        '{}',
+        plate,
+        "lsymc",
+        0
+    })
+
+    --MySQL.Async.insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?, ?, ?)', {Player.PlayerData.citizenid, boatModel, plate})
 end
 
 local function GetItemPrice(Item, price)
@@ -79,16 +92,16 @@ RegisterNetEvent('qb-diving:server:RemoveItem', function(item, amount)
     Player.Functions.RemoveItem(item, amount)
 end)
 
-RegisterNetEvent('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:scalarSync('SELECT 1 FROM player_boats WHERE plate = ?', {plate})
-    if result ~= nil then
-        exports.oxmysql:execute(
-            'UPDATE player_boats SET state = ?, boathouse = ?, fuel = ? WHERE plate = ? AND citizenid = ?',
-            {state, boathouse, fuel, plate, Player.PlayerData.citizenid})
-    end
-end)
+--RegisterNetEvent('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
+--    local src = source
+--    local Player = QBCore.Functions.GetPlayer(src)
+--    local result = MySQL.Sync.fetchScalar('SELECT 1 FROM player_boats WHERE plate = ?', {plate})
+--    if result ~= nil then
+--        MySQL.Async.execute(
+--            'UPDATE player_boats SET state = ?, boathouse = ?, fuel = ? WHERE plate = ? AND citizenid = ?',
+--            {state, boathouse, fuel, plate, Player.PlayerData.citizenid})
+--    end
+--end)
 
 RegisterNetEvent('qb-diving:server:CallCops', function(Coords)
     local src = source
@@ -145,27 +158,27 @@ QBCore.Functions.CreateCallback('qb-diving:server:GetBusyDocks', function(source
     cb(QBBoatshop.Locations["berths"])
 end)
 
-QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?', {Player.PlayerData.citizenid, dock})
-    if result[1] ~= nil then
-        cb(result)
-    else
-        cb(nil)
-    end
-end)
+--QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
+--    local src = source
+--    local Player = QBCore.Functions.GetPlayer(src)
+--    local result = MySQL.Sync.fetchAll('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?', {Player.PlayerData.citizenid, dock})
+--    if result[1] ~= nil then
+--        cb(result)
+--    else
+--        cb(nil)
+--    end
+--end)
 
-QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:executeSync('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?', {Player.PlayerData.citizenid, 0})
-    if result[1] ~= nil then
-        cb(result)
-    else
-        cb(nil)
-    end
-end)
+--QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
+--    local src = source
+--    local Player = QBCore.Functions.GetPlayer(src)
+--    local result = MySQL.Sync.fetchAll('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?', {Player.PlayerData.citizenid, 0})
+--    if result[1] ~= nil then
+--        cb(result)
+--    else
+--        cb(nil)
+--    end
+--end)
 
 -- Items
 
