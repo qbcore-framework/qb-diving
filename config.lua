@@ -1,107 +1,9 @@
-QBBoatshop = QBBoatshop or {}
-QBDiving = QBDiving or {}
-QBBoatshop.PoliceBoat = vector3(-800.67, -1494.54, 1.59)
-QBBoatshop.PoliceBoatSpawn = vector4(-793.58, -1501.4, 0.12, 111.5)
-QBBoatshop.PoliceBoat2 = vector3(-279.41, 6635.09, 7.51)
-QBBoatshop.PoliceBoatSpawn2 = vector4(-293.10, 6642.69, 0.15, 65.5)
+Config = Config or {}
 
-QBBoatshop.Docks = {
-    ["lsymc"] = {
-        label = "LSYMC Boathouse",
-        coords = {
-            take = vector3(-794.66, -1510.83, 1.59),
-            put = vector4(-793.58, -1501.4, 0.12, 111.5)
-        }
-    },
-    ["paleto"] = {
-        label = "Paleto Boathouse",
-        coords = {
-            take = vector3(-277.46, 6637.2, 7.48),
-            put = vector4(-289.2, 6637.96, 1.01, 45.5)
-        }
-    },
-    ["millars"] = {
-        label = "Millars Boathouse",
-        coords = {
-            take = vector3(1299.24, 4216.69, 33.9),
-            put = vector4(1297.82, 4209.61, 30.12, 253.5),
-        }
-    },
-}
+Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target interactions (don't change this, go to your server.cfg and add `setr UseTarget true` to use this and just that from true to false or the other way around)
+Config.CopsChance = 0.5 -- The chance of the cops getting called when a coral gets picked up, this ranges from 0.0 to 1.0
 
-QBBoatshop.Depots = {
-    [1] = {
-        label = "LSYMC Depot",
-        coords = {
-            take = vector3(-772.98, -1430.76, 1.59),
-            put = vector4(-729.77, -1355.49, 1.19, 142.5)
-        }
-    },
-}
-
-QBBoatshop.Locations = {
-    ["berths"] = {
-        [1] = {
-            ["boatModel"] = "seashark",
-            ["coords"] = {
-                ["boat"] = vector4(-727.05, -1326.59, 1.06, 229.5),
-                ["buy"] = vector3(-723.3, -1323.61, 1.59),
-            },
-            ["inUse"] = false
-        },
-        [2] = {
-            ["boatModel"] = "dinghy",
-            ["coords"] = {
-                ["boat"] = vector4(-732.84, -1333.5, 1.59, 229.5),
-                ["buy"] = vector3(-729.19, -1330.58, 1.67),
-            },
-            ["inUse"] = false
-        },
-        [3] = {
-            ["boatModel"] = "speeder",
-            ["coords"] = {
-                ["boat"] = vector4(-737.84, -1340.83, 0.79, 229.5),
-                ["buy"] = vector3(-734.98, -1337.42, 1.67),
-            },
-            ["inUse"] = false
-        },
-        [4] = {
-            ["boatModel"] = "marquis",
-            ["coords"] = {
-                ["boat"] = vector4(-741.53, -1349.7, 0.79, 229.5),
-                ["buy"] = vector3(-740.62, -1344.28, 1.67),
-            },
-            ["inUse"] = false
-        },
-    }
-}
-
-QBBoatshop.ShopBoats = {
-    ["dinghy"] = {
-        ["model"] = "dinghy",
-        ["label"] = "Dinghy",
-        ["price"] = 15000
-    },
-    ["speeder"] = {
-        ["model"] = "speeder",
-        ["label"] = "Speeder",
-        ["price"] = 20000
-    },
-    ["marquis"] = {
-        ["model"] = "marquis",
-        ["label"] = "Marquis",
-        ["price"] = 30000
-    },
-    ["seashark"] = {
-        ["model"] = "seashark",
-        ["label"] = "Seashark",
-        ["price"] = 10000
-    }
-}
-
-QBBoatshop.SpawnVehicle = vector4(-729.77, -1355.49, 1.19, 142.5)
-
-QBDiving.Locations = {
+Config.CoralLocations = {
     [1] = {
         label = "This is Location 1",
         coords = {
@@ -109,18 +11,30 @@ QBDiving.Locations = {
             Coral = {
                 [1] = {
                     coords = vector3(-2849.25, -377.58, -40.23),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [2] = {
                     coords = vector3(-2838.43, -363.63, -39.45),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [3] = {
                     coords = vector3(-2887.04, -394.87, -40.91),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [4] = {
                     coords = vector3(-2808.99, -385.56, -39.32),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
             }
@@ -135,14 +49,23 @@ QBDiving.Locations = {
             Coral = {
                 [1] = {
                     coords = vector3(-3275.03, -38.58, -19.21),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [2] = {
                     coords = vector3(-3273.73, -76.0, -26.81),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [3] = {
                     coords = vector3(-3346.53, -50.4, -35.84),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
             }
@@ -157,14 +80,23 @@ QBDiving.Locations = {
             Coral = {
                 [1] = {
                     coords = vector3(-3388.01, 1635.88, -39.41),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [2] = {
                     coords = vector3(-3354.19, 1549.3, -38.21),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [3] = {
                     coords = vector3(-3326.04, 1636.43, -40.98),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
             }
@@ -179,14 +111,23 @@ QBDiving.Locations = {
             Coral = {
                 [1] = {
                     coords = vector3(2978.05, -1509.07, -24.96),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [2] = {
                     coords = vector3(3004.42, -1576.95, -29.36),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [3] = {
                     coords = vector3(2951.65, -1560.69, -28.36),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
             }
@@ -201,18 +142,30 @@ QBDiving.Locations = {
             Coral = {
                 [1] = {
                     coords = vector3(3421.69, 1976.54, -50.64),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [2] = {
                     coords = vector3(3424.07, 1957.46, -53.04),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [3] = {
                     coords = vector3(3434.65, 1993.73, -49.84),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [4] = {
                     coords = vector3(3415.42, 1965.25, -52.04),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
             }
@@ -227,18 +180,30 @@ QBDiving.Locations = {
             Coral = {
                 [1] = {
                     coords = vector3(2724.0, -2134.95, -19.33),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [2] = {
                     coords = vector3(2710.68, -2156.06, -18.63),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [3] = {
                     coords = vector3(2702.84, -2139.29, -18.51),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [4] = {
                     coords = vector3(2736.27, -2153.91, -20.88),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
             }
@@ -253,18 +218,30 @@ QBDiving.Locations = {
             Coral = {
                 [1] = {
                     coords = vector3(542.31, 7245.37, -30.01),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [2] = {
                     coords = vector3(528.21, 7223.26, -29.51),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [3] = {
                     coords = vector3(510.36, 7254.97, -32.11),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
                 [4] = {
                     coords = vector3(525.37, 7259.12, -30.51),
+                    length = 3,
+                    width = 3,
+                    heading = 100.0,
                     PickedUp = false
                 },
             }
@@ -274,8 +251,7 @@ QBDiving.Locations = {
     },
 }
 
---ALSO CHANGE VALUES IN SERVER/MAIN.LUA
-QBDiving.CoralTypes = {
+Config.CoralTypes = {
     [1] = {
         item = "dendrogyra_coral",
         maxAmount = math.random(1, 5),
@@ -288,8 +264,33 @@ QBDiving.CoralTypes = {
     }
 }
 
-QBDiving.SellLocations = {
+Config.PriceModifiers = {
     [1] = {
-        ["coords"] = vector3(-1684.13, -1068.91, 13.15)
+        minAmount = 5,
+        maxAmount = 10,
+        minPercentage = 80,
+        maxPercentage = 85
+    },
+    [2] = {
+        minAmount = 11,
+        maxAmount = 15,
+        minPercentage = 70,
+        maxPercentage = 75
+    },
+    [3] = {
+        minAmount = 16,
+        minPercentage = 50,
+        maxPercentage = 55
+    }
+}
+
+Config.SellLocations = {
+    [1] = {
+        coords = vector4(-1684.13, -1068.91, 13.15, 100.0),
+        model = 'a_m_m_salton_01',
+        zoneOptions = { -- Only used when not using the target
+            length = 3,
+            width = 3
+        }
     }
 }
