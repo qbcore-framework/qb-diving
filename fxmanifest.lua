@@ -2,23 +2,14 @@ fx_version 'cerulean'
 game 'gta5'
 
 description 'QB-Diving'
-version '1.0.0'
+version '1.1.0'
 
 shared_script 'config.lua'
-
-server_scripts {
-    '@oxmysql/lib/MySQL.lua',
-    'server/main.lua',
-    'server/diving.lua'
-}
-
+server_script 'server/main.lua'
 client_scripts {
-    'client/main.lua',
-    'client/boatshop.lua',
-    'client/diving.lua',
-    --'client/garage.lua',
-    'client/gui.lua',
-    'client/shop.lua'
+    '@PolyZone/client.lua',
+    '@PolyZone/BoxZone.lua',
+    'client/main.lua'
 }
 
 lua54 'yes'

@@ -1,123 +1,41 @@
-QBCore = exports['qb-core']:GetCoreObject()
-local AvailableCoral = {}
+local QBCore = exports['qb-core']:GetCoreObject()
+local currentDivingArea = math.random(1, #Config.CoralLocations)
+local availableCoral = {}
 
 -- Functions
 
-local function InsertBoat(boatModel, Player, plate)
-    local vehicle = boatModel
-    local cid = Player.PlayerData.citizenid
-    MySQL.Async.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
-        Player.PlayerData.license,
-        cid,
-        vehicle,
-        GetHashKey(vehicle),
-        '{}',
-        plate,
-        "lsymc",
-        0
-    })
-
-    --MySQL.Async.insert('INSERT INTO player_boats (citizenid, model, plate) VALUES (?, ?, ?)', {Player.PlayerData.citizenid, boatModel, plate})
-end
-
-local function GetItemPrice(Item, price)
-    if Item.amount > 5 then
-        price = price / 100 * 80
-    elseif Item.amount > 10 then
-        price = price / 100 * 70
-    elseif Item.amount > 15 then
-        price = price / 100 * 50
+local function getItemPrice(amount, price)
+    for k, v in pairs(Config.PriceModifiers) do
+        local modifier = #Config.PriceModifiers == k and amount >= v.minAmount or amount >= v.minAmount and amount <= v.maxAmount
+        if modifier then
+            price /= 100 * math.random(v.minPercentage, v.maxPercentage)
+            price = mat.ceil(price)
+        end
     end
     return price
 end
 
-local function HasCoral(src)
+local function hasCoral(src)
     local Player = QBCore.Functions.GetPlayer(src)
-    local retval = false
-    AvailableCoral = {}
-    for k, v in pairs(QBDiving.CoralTypes) do
-        local Item = Player.Functions.GetItemByName(v.item)
-        if Item ~= nil then
-            AvailableCoral[#AvailableCoral+1] = v
-            retval = true
-        end
+    availableCoral = {}
+    for k, v in pairs(Config.CoralTypes) do
+        local item = Player.Functions.GetItemByName(v.item)
+        if item then availableCoral[#availableCoral+1] = v end
     end
-    return retval
+    return next(availableCoral)
 end
 
 -- Events
 
-RegisterNetEvent('qb-diving:server:SetBerthVehicle', function(BerthId, vehicleModel)
-    TriggerClientEvent('qb-diving:client:SetBerthVehicle', -1, BerthId, vehicleModel)
-    QBBoatshop.Locations["berths"][BerthId]["boatModel"] = boatModel
-end)
-
-RegisterNetEvent('qb-diving:server:SetDockInUse', function(BerthId, InUse)
-    QBBoatshop.Locations["berths"][BerthId]["inUse"] = InUse
-    TriggerClientEvent('qb-diving:client:SetDockInUse', -1, BerthId, InUse)
-end)
-
-RegisterNetEvent('qb-diving:server:BuyBoat', function(boatModel, BerthId)
-    local BoatPrice = QBBoatshop.ShopBoats[boatModel]["price"]
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local PlayerMoney = {
-        cash = Player.PlayerData.money.cash,
-        bank = Player.PlayerData.money.bank
-    }
-    local missingMoney = 0
-    local plate = "QB" .. math.random(1000, 9999)
-
-    if PlayerMoney.cash >= BoatPrice then
-        Player.Functions.RemoveMoney('cash', BoatPrice, "bought-boat")
-        TriggerClientEvent('qb-diving:client:BuyBoat', src, boatModel, plate)
-        InsertBoat(boatModel, Player, plate)
-    elseif PlayerMoney.bank >= BoatPrice then
-        Player.Functions.RemoveMoney('bank', BoatPrice, "bought-boat")
-        TriggerClientEvent('qb-diving:client:BuyBoat', src, boatModel, plate)
-        InsertBoat(boatModel, Player, plate)
-    else
-        if PlayerMoney.bank > PlayerMoney.cash then
-            missingMoney = (BoatPrice - PlayerMoney.bank)
-        else
-            missingMoney = (BoatPrice - PlayerMoney.cash)
-        end
-        TriggerClientEvent('QBCore:Notify', src, 'Not Enough Money, You Are Missing $' .. missingMoney .. '', 'error')
-    end
-end)
-
-RegisterNetEvent('qb-diving:server:RemoveItem', function(item, amount)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    Player.Functions.RemoveItem(item, amount)
-end)
-
---RegisterNetEvent('qb-diving:server:SetBoatState', function(plate, state, boathouse, fuel)
---    local src = source
---    local Player = QBCore.Functions.GetPlayer(src)
---    local result = MySQL.Sync.fetchScalar('SELECT 1 FROM player_boats WHERE plate = ?', {plate})
---    if result ~= nil then
---        MySQL.Async.execute(
---            'UPDATE player_boats SET state = ?, boathouse = ?, fuel = ? WHERE plate = ? AND citizenid = ?',
---            {state, boathouse, fuel, plate, Player.PlayerData.citizenid})
---    end
---end)
-
-RegisterNetEvent('qb-diving:server:CallCops', function(Coords)
-    local src = source
-    for k, v in pairs(QBCore.Functions.GetPlayers()) do
-        local Player = QBCore.Functions.GetPlayer(v)
-        if Player ~= nil then
-            if (Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty) then
+RegisterNetEvent('qb-diving:server:CallCops', function(coords)
+    for _, Player in pairs(QBCore.Functions.GetQBPlayers()) do
+        if Player then
+            if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
                 local msg = "This coral may be stolen"
-                TriggerClientEvent('qb-diving:client:CallCops', Player.PlayerData.source, Coords, msg)
+                TriggerClientEvent('qb-diving:client:CallCops', Player.PlayerData.source, coords, msg)
                 local alertData = {
                     title = "Illegal diving",
-                    coords = {
-                        x = Coords.x,
-                        y = Coords.y,
-                        z = Coords.z
-                    },
+                    coords = coords,
                     description = msg
                 }
                 TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
@@ -129,70 +47,87 @@ end)
 RegisterNetEvent('qb-diving:server:SellCoral', function()
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    if HasCoral(src) then
-        for k, v in pairs(AvailableCoral) do
-            local Item = Player.Functions.GetItemByName(v.item)
-            local price = (Item.amount * v.price)
-            local Reward = math.ceil(GetItemPrice(Item, price))
-            if Item.amount > 1 then
-                for i = 1, Item.amount, 1 do
-                    Player.Functions.RemoveItem(Item.name, 1)
-                    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[Item.name], "remove")
-                    Player.Functions.AddMoney('cash', math.ceil((Reward / Item.amount)), "sold-coral")
-                    Wait(250)
-                end
-            else
-                Player.Functions.RemoveItem(Item.name, 1)
-                Player.Functions.AddMoney('cash', Reward, "sold-coral")
-                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[Item.name], "remove")
-            end
+    if not Player then return end
+    if hasCoral(src) then
+        for _, v in pairs(availableCoral) do
+            local item = Player.Functions.GetItemByName(v.item)
+            local price = item.amount * v.price
+            local reward = getItemPrice(item.amount, price)
+            Player.Functions.RemoveItem(item.name, item.amount)
+            Player.Functions.AddMoney('cash', math.ceil(reward / item.amount), "sold-coral")
+            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "remove")
         end
     else
         TriggerClientEvent('QBCore:Notify', src, 'You don\'t have any coral to sell..', 'error')
     end
 end)
 
--- Callbacks
-
-QBCore.Functions.CreateCallback('qb-diving:server:GetBusyDocks', function(source, cb)
-    cb(QBBoatshop.Locations["berths"])
+RegisterNetEvent('qb-diving:server:TakeCoral', function(area, coral, bool)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+    local coralType = math.random(1, #Config.CoralTypes)
+    local amount = math.random(1, Config.CoralTypes[coralType].maxAmount)
+    local ItemData = QBCore.Shared.Items[Config.CoralTypes[coralType].item]
+    if amount > 1 then
+        for _ = 1, amount, 1 do
+            Player.Functions.AddItem(ItemData["name"], 1)
+            TriggerClientEvent('inventory:client:ItemBox', src, ItemData, "add")
+            Wait(250)
+        end
+    else
+        Player.Functions.AddItem(ItemData["name"], amount)
+        TriggerClientEvent('inventory:client:ItemBox', src, ItemData, "add")
+    end
+    if (Config.CoralLocations[area].TotalCoral - 1) == 0 then
+        for _, v in pairs(Config.CoralLocations[currentDivingArea].coords.Coral) do
+            v.PickedUp = false
+        end
+        Config.CoralLocations[currentDivingArea].TotalCoral = Config.CoralLocations[currentDivingArea].DefaultCoral
+        local newLocation = math.random(1, #Config.CoralLocations)
+        while newLocation == currentDivingArea do
+            Wait(0)
+            newLocation = math.random(1, #Config.CoralLocations)
+        end
+        currentDivingArea = newLocation
+        TriggerClientEvent('qb-diving:client:NewLocations', -1)
+    else
+        Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
+        Config.CoralLocations[area].TotalCoral = Config.CoralLocations[area].TotalCoral - 1
+    end
+    TriggerClientEvent('qb-diving:server:UpdateCoral', -1, area, coral, bool)
 end)
 
---QBCore.Functions.CreateCallback('qb-diving:server:GetMyBoats', function(source, cb, dock)
---    local src = source
---    local Player = QBCore.Functions.GetPlayer(src)
---    local result = MySQL.Sync.fetchAll('SELECT * FROM player_boats WHERE citizenid = ? AND boathouse = ?', {Player.PlayerData.citizenid, dock})
---    if result[1] ~= nil then
---        cb(result)
---    else
---        cb(nil)
---    end
---end)
+RegisterNetEvent('qb-diving:server:RemoveGear', function()
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+    Player.Functions.RemoveItem("diving_gear", 1)
+    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "remove")
+end)
 
---QBCore.Functions.CreateCallback('qb-diving:server:GetDepotBoats', function(source, cb, dock)
---    local src = source
---    local Player = QBCore.Functions.GetPlayer(src)
---    local result = MySQL.Sync.fetchAll('SELECT * FROM player_boats WHERE citizenid = ? AND state = ?', {Player.PlayerData.citizenid, 0})
---    if result[1] ~= nil then
---        cb(result)
---    else
---        cb(nil)
---    end
---end)
+RegisterNetEvent('qb-diving:server:GiveBackGear', function()
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+    Player.Functions.AddItem("diving_gear", 1)
+    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "add")
+end)
+
+-- Callbacks
+
+QBCore.Functions.CreateCallback('qb-diving:server:GetDivingConfig', function(_, cb)
+    cb(Config.CoralLocations, currentDivingArea)
+end)
 
 -- Items
 
-QBCore.Functions.CreateUseableItem("jerry_can", function(source, item)
-    TriggerClientEvent("qb-diving:client:UseJerrycan", source)
-end)
-
-QBCore.Functions.CreateUseableItem("diving_gear", function(source, item)
+QBCore.Functions.CreateUseableItem("diving_gear", function(source)
     TriggerClientEvent("qb-diving:client:UseGear", source, true)
 end)
 
 -- Commands
 
-QBCore.Commands.Add("divingsuit", "Take off your diving suit", {}, false, function(source, args)
-    local Player = QBCore.Functions.GetPlayer(source)
+QBCore.Commands.Add("divingsuit", "Take off your diving suit", {}, false, function(source)
     TriggerClientEvent("qb-diving:client:UseGear", source, false)
 end)

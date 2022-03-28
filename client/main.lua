@@ -1,181 +1,344 @@
-QBCore = exports['qb-core']:GetCoreObject()
-PlayerJob = {}
-local policeThreadRunning = false
+local QBCore = exports['qb-core']:GetCoreObject()
+local isLoggedIn = LocalPlayer.state['isLoggedIn']
+local zones = {}
+local currentArea = 0
+local inSellerZone = false
+local currentDivingLocation = {
+    area = 0,
+    blip = {
+        radius = nil,
+        label = nil
+    }
+}
+local currentGear = {
+    mask = 0,
+    tank = 0,
+    enabled = false
+}
 
 -- Functions
 
-function DrawText3D(x, y, z, text) -- Used Globally
-	SetTextScale(0.35, 0.35)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
-    SetTextCentre(true)
-    AddTextComponentString(text)
-    SetDrawOrigin(x,y,z, 0)
-    DrawText(0.0, 0.0)
-    local factor = (string.len(text)) / 370
-    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
-    ClearDrawOrigin()
+local function callCops()
+    local call = math.random(1, 3)
+    local chance = math.random(1, 3)
+    local ped = PlayerPedId()
+    local coords = GetEntityCoords(ped)
+    if call == chance then
+        TriggerServerEvent('qb-diving:server:CallCops', coords)
+    end
 end
 
-local function RunPoliceThread()
-    if not policeThreadRunning then
-        policeThreadRunning = true
-        CreateThread(function()
-            while LocalPlayer.state.isLoggedIn and PlayerJob.name == "police" do
-                local sleep = 1000
-                local inRange = false
+local function deleteGear()
+	if currentGear.mask ~= 0 then
+        DetachEntity(currentGear.mask, 0, 1)
+        DeleteEntity(currentGear.mask)
+		currentGear.mask = 0
+    end
 
-                local pos = GetEntityCoords(PlayerPedId())
-                local dist = #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z))
-                local dist2 = #(pos - vector3(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z))
+	if currentGear.tank ~= 0 then
+        DetachEntity(currentGear.tank, 0, 1)
+        DeleteEntity(currentGear.tank)
+		currentGear.tank = 0
+	end
+end
 
-                if dist < 10 then
-                    inRange = true
-                    DrawMarker(2, QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
-                    if #(pos - vector3(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z)) < 1.5 then
-                        QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z, "~g~E~w~ - Take Boat")
-                        if IsControlJustReleased(0, 38) then
-                            local coords = QBBoatshop.PoliceBoatSpawn
-                            QBCore.Functions.SpawnVehicle("predator", function(veh)
-                                SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
-                                SetEntityHeading(veh, coords.w)
-                                exports['LegacyFuel']:SetFuel(veh, 100.0)
-                                TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-                                TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-                                SetVehicleEngineOn(veh, true, true)
-                            end, coords, true)
-                        end
-                    end
+local function gearAnim()
+    RequestAnimDict("clothingshirt")
+    while not HasAnimDictLoaded("clothingshirt") do
+        Wait(0)
+    end
+	TaskPlayAnim(PlayerPedId(), "clothingshirt", "try_shirt_positive_d", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
+end
 
-                end
+local function takeCoral(coral)
+    local ped = PlayerPedId()
+    local times = math.random(2, 5)
+    if math.random() > Config.CopsChance then callCops() end
+    FreezeEntityPosition(ped, true)
+    QBCore.Functions.Progressbar("take_coral", "Collecting coral", times * 1000, false, true, {
+        disableMovement = true,
+        disableCarMovement = true,
+        disableMouse = false,
+        disableCombat = true,
+    }, {
+        animDict = "weapons@first_person@aim_rng@generic@projectile@thermal_charge@",
+        anim = "plant_floor",
+        flags = 16,
+    }, {}, {}, function() -- Done
+        Config.CoralLocations[currentDivingLocation.area].coords.Coral[coral].PickedUp = true
+        TriggerServerEvent('qb-diving:server:TakeCoral', currentDivingLocation.area, coral, true)
+        ClearPedTasks(ped)
+        FreezeEntityPosition(ped, false)
+    end, function() -- Cancel
+        ClearPedTasks(ped)
+        FreezeEntityPosition(ped, false)
+    end)
+end
 
-
-                if dist2 < 10 then
-                    inRange = true
-                    DrawMarker(2, QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
-                    if #(pos - vector3(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z)) < 1.5 then
-                        QBCore.Functions.DrawText3D(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z, "~g~E~w~ - Take Boat")
-                        if IsControlJustReleased(0, 38) then
-                            local coords = QBBoatshop.PoliceBoatSpawn2
-                            QBCore.Functions.SpawnVehicle("predator", function(veh)
-                                SetVehicleNumberPlateText(veh, "PBOA"..tostring(math.random(1000, 9999)))
-                                SetEntityHeading(veh, coords.w)
-                                exports['LegacyFuel']:SetFuel(veh, 100.0)
-                                TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-                                TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-                                SetVehicleEngineOn(veh, true, true)
-                            end, coords, true)
-                        end
-                    end
-                end
-
-                sleep = 5
-                if not inRange then
-                    sleep = 1000
-                end
-                Wait(sleep)
+local function setDivingLocation(divingLocation)
+    if currentDivingLocation.area ~= 0 then
+        for k in pairs(Config.CoralLocations[currentDivingLocation.area].coords.Coral) do
+            if Config.UseTarget then
+                exports['qb-target']:RemoveZone(k)
+            else
+                if next(zones) then zones[k]:destroy() end
             end
-            policeThreadRunning = false
-        end)
+        end
+    end
+    currentDivingLocation.area = divingLocation
+    for _, blip in pairs(currentDivingLocation.blip) do if blip then RemoveBlip(blip) end end
+    local radiusBlip = AddBlipForRadius(Config.CoralLocations[currentDivingLocation.area].coords.Area, 100.0)
+    SetBlipRotation(radiusBlip, 0)
+    SetBlipColour(radiusBlip, 47)
+    currentDivingLocation.blip.radius = radiusBlip
+    local labelBlip = AddBlipForCoord(Config.CoralLocations[currentDivingLocation.area].coords.Area)
+    SetBlipSprite(labelBlip, 597)
+    SetBlipDisplay(labelBlip, 4)
+    SetBlipScale(labelBlip, 0.7)
+    SetBlipColour(labelBlip, 0)
+    SetBlipAsShortRange(labelBlip, true)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName('Diving Area')
+    EndTextCommandSetBlipName(labelBlip)
+    currentDivingLocation.blip.label = labelBlip
+    for k, v in pairs(Config.CoralLocations[currentDivingLocation.area].coords.Coral) do
+        if Config.UseTarget then
+            exports['qb-target']:AddBoxZone('diving_coral_zone_'..k, v.coords, v.length, v.width, {
+                name = 'diving_coral_zone_'..k,
+                heading = v.heading,
+                debugPoly = false,
+                minZ = v.coords.z - 3,
+                maxZ = v.coords.z + 2
+            }, {
+                options = {
+                    {
+                        label = 'Collect Coral',
+                        icon = 'fa-solid fa-water',
+                        action = function()
+                            takeCoral(k)
+                        end
+                    }
+                },
+                distance = 2.0
+            })
+        else
+            zones[k] = BoxZone:Create(v.coords, v.length, v.width, {
+                name = 'diving_coral_zone_'..k,
+                heading = v.heading,
+                debugPoly = false,
+                minZ = v.coords.z - 3,
+                maxZ = v.coords.z + 2
+            })
+            zones[k]:onPlayerInOut(function(inside)
+                if inside then
+                    currentArea = k
+                    exports['qb-core']:DrawText('[E] Collect Coral')
+                else
+                    currentArea = 0
+                    exports['qb-core']:HideText()
+                end
+            end)
+        end
+    end
+end
+
+local function sellCoral()
+    local playerPed = PlayerPedId()
+    LocalPlayer.state:set("inv_busy", true, true)
+    TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_STAND_IMPATIENT", 0, true)
+    QBCore.Functions.Progressbar("sell_coral_items", "Checking Pockets To Sell Coral", math.random(2000, 4000), false, true, {}, {}, {}, {}, function() -- Done
+        ClearPedTasks(playerPed)
+        TriggerServerEvent('qb-diving:server:SellCoral')
+        LocalPlayer.state:set("inv_busy", false, true)
+    end, function() -- Cancel
+        ClearPedTasksImmediately(playerPed)
+        QBCore.Functions.Notify("Canceled..", "error")
+        LocalPlayer.state:set("inv_busy", false, true)
+    end)
+end
+
+local function createSeller()
+    for i = 1, #Config.SellLocations do
+        local current = Config.SellLocations[i]
+        current.model = type(current.model) == 'string' and GetHashKey(current.model) or current.model
+        RequestModel(current.model)
+        while not HasModelLoaded(current.model) do
+            Wait(0)
+        end
+        local currentCoords = vector4(current.coords.x, current.coords.y, current.coords.z - 1, current.coords.w)
+        local ped = CreatePed(0, current.model, currentCoords, false, false)
+        FreezeEntityPosition(ped, true)
+        SetEntityInvincible(ped, true)
+        SetBlockingOfNonTemporaryEvents(ped, true)
+        if Config.UseTarget then
+            exports['qb-target']:AddTargetEntity(ped, {
+                options = {
+                    {
+                        label = 'Sell Coral',
+                        icon = 'fa-solid fa-dollar-sign',
+                        action = function()
+                            sellCoral()
+                        end
+                    }
+                },
+                distance = 2.0
+            })
+        else
+            local zone = BoxZone:Create(current.coords.xyz, current.zoneOptions.length, current.zoneOptions.width, {
+                name = 'diving_coral_seller_'..i,
+                heading = current.coords.w,
+                debugPoly = false,
+                minZ = current.coords.z - 1.5,
+                maxZ = current.coords.z + 1.5
+            })
+            zone:onPlayerInOut(function(inside)
+                if inside then
+                    inSellerZone = true
+                    exports['qb-core']:DrawText('[E] Sell Coral')
+                else
+                    inSellerZone = false
+                    exports['qb-core']:HideText()
+                end
+            end)
+        end
     end
 end
 
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    QBCore.Functions.TriggerCallback('qb-diving:server:GetBusyDocks', function(Docks)
-        QBBoatshop.Locations["berths"] = Docks
+    QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
+        Config.CoralLocations = config
+        setDivingLocation(area)
+        createSeller()
+        isLoggedIn = true
     end)
+end)
 
-    QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(Config, Area)
-        QBDiving.Locations = Config
-        TriggerEvent('qb-diving:client:SetDivingLocation', Area)
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+    isLoggedIn = false
+end)
+
+RegisterNetEvent('qb-diving:client:NewLocations', function()
+    QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(Config, area)
+        Config.CoralLocations = config
+        setDivingLocation(area)
     end)
+end)
 
-    PlayerJob = QBCore.Functions.GetPlayerData().job
+RegisterNetEvent('qb-diving:client:UpdateCoral', function(area, coral, bool)
+    Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
+end)
 
-    if PlayerJob.name == "police" then
-        if PoliceBlip ~= nil then
-            RemoveBlip(PoliceBlip)
+RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
+    PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
+    TriggerEvent("chatMessage", "911 MESSAGE", "error", msg)
+    local transG = 100
+    local blip = AddBlipForRadius(coords.x, coords.y, coords.z, 100.0)
+    SetBlipSprite(blip, 9)
+    SetBlipColour(blip, 1)
+    SetBlipAlpha(blip, transG)
+    SetBlipAsShortRange(blip, false)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString("911 - Dive Site")
+    EndTextCommandSetBlipName(blip)
+    while transG ~= 0 do
+        Wait(180 * 4)
+        transG = transG - 1
+        SetBlipAlpha(blip, transG)
+        if transG == 0 then
+            SetBlipSprite(blip, 2)
+            RemoveBlip(blip)
+            return
         end
-        PoliceBlip = AddBlipForCoord(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z)
-        SetBlipSprite(PoliceBlip, 410)
-        SetBlipDisplay(PoliceBlip, 4)
-        SetBlipScale(PoliceBlip, 0.8)
-        SetBlipAsShortRange(PoliceBlip, true)
-        SetBlipColour(PoliceBlip, 29)
-
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName("Police boat")
-        EndTextCommandSetBlipName(PoliceBlip)
-        PoliceBlip = AddBlipForCoord(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z)
-        SetBlipSprite(PoliceBlip, 410)
-        SetBlipDisplay(PoliceBlip, 4)
-        SetBlipScale(PoliceBlip, 0.8)
-        SetBlipAsShortRange(PoliceBlip, true)
-        SetBlipColour(PoliceBlip, 29)
-
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName("Police boat")
-        EndTextCommandSetBlipName(PoliceBlip)
-
-        RunPoliceThread()
     end
 end)
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-    PlayerJob = JobInfo
-
-    if JobInfo.name == "police" then
-        if PoliceBlip ~= nil then
-            RemoveBlip(PoliceBlip)
-        end
-        PoliceBlip = AddBlipForCoord(QBBoatshop.PoliceBoat.x, QBBoatshop.PoliceBoat.y, QBBoatshop.PoliceBoat.z)
-        SetBlipSprite(PoliceBlip, 410)
-        SetBlipDisplay(PoliceBlip, 4)
-        SetBlipScale(PoliceBlip, 0.8)
-        SetBlipAsShortRange(PoliceBlip, true)
-        SetBlipColour(PoliceBlip, 29)
-
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName("Police boat")
-        EndTextCommandSetBlipName(PoliceBlip)
-        PoliceBlip = AddBlipForCoord(QBBoatshop.PoliceBoat2.x, QBBoatshop.PoliceBoat2.y, QBBoatshop.PoliceBoat2.z)
-        SetBlipSprite(PoliceBlip, 410)
-        SetBlipDisplay(PoliceBlip, 4)
-        SetBlipScale(PoliceBlip, 0.8)
-        SetBlipAsShortRange(PoliceBlip, true)
-        SetBlipColour(PoliceBlip, 29)
-
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName("Police boat")
-        EndTextCommandSetBlipName(PoliceBlip)
-
-        RunPoliceThread()
-    end
-end)
-
-RegisterNetEvent('qb-diving:client:UseJerrycan', function()
+RegisterNetEvent('qb-diving:client:UseGear', function(bool)
     local ped = PlayerPedId()
-    local boat = IsPedInAnyBoat(ped)
-    if boat then
-        local curVeh = GetVehiclePedIsIn(ped, false)
-        QBCore.Functions.Progressbar("reful_boat", "Refueling boat ..", 20000, false, true, {
-            disableMovement = true,
-            disableCarMovement = true,
-            disableMouse = false,
-            disableCombat = true,
-        }, {}, {}, {}, function() -- Done
-            exports['LegacyFuel']:SetFuel(curVeh, 100)
-            QBCore.Functions.Notify('The boat has been refueled', 'success')
-            TriggerServerEvent('qb-diving:server:RemoveItem', 'jerry_can', 1)
-            TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items['jerry_can'], "remove")
-        end, function() -- Cancel
-            QBCore.Functions.Notify('Refueling has been canceled!', 'error')
+    if bool then
+        gearAnim()
+        QBCore.Functions.Progressbar("equip_gear", "Put on a diving suit", 5000, false, true, {}, {}, {}, {}, function() -- Done
+            deleteGear()
+            local maskModel = `p_d_scuba_mask_s`
+            local tankModel = `p_s_scuba_tank_s`
+            RequestModel(tankModel)
+            while not HasModelLoaded(tankModel) do
+                Wait(0)
+            end
+            TankObject = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+            local bone1 = GetPedBoneIndex(ped, 24818)
+            AttachEntityToEntity(TankObject, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+            currentGear.tank = TankObject
+            RequestModel(maskModel)
+            while not HasModelLoaded(maskModel) do
+                Wait(0)
+            end
+            MaskObject = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+            local bone2 = GetPedBoneIndex(ped, 12844)
+            AttachEntityToEntity(MaskObject, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+            currentGear.mask = MaskObject
+            SetEnableScuba(ped, true)
+            SetPedMaxTimeUnderwater(ped, 2000.00)
+            currentGear.enabled = true
+            TriggerServerEvent('qb-diving:server:RemoveGear')
+            ClearPedTasks(ped)
+            TriggerEvent('chatMessage', "SYSTEM", "error", "/divingsuit to take off your diving suit")
         end)
     else
-        QBCore.Functions.Notify('You are not in a boat', 'error')
+        if currentGear.enabled then
+            gearAnim()
+            QBCore.Functions.Progressbar("remove_gear", "Pull out a diving suit ..", 5000, false, true, {}, {}, {}, {}, function() -- Done
+                deleteGear()
+                SetEnableScuba(ped, false)
+                SetPedMaxTimeUnderwater(ped, 1.00)
+                currentGear.enabled = false
+                TriggerServerEvent('qb-diving:server:GiveBackGear')
+                ClearPedTasks(ped)
+                QBCore.Functions.Notify('You took your wetsuit off')
+            end)
+        else
+            QBCore.Functions.Notify('You are not wearing a diving gear ..', 'error')
+        end
+    end
+end)
+
+-- Threads
+
+CreateThread(function()
+    if isLoggedIn then
+        QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
+            Config.CoralLocations = config
+            setDivingLocation(area)
+            createSeller()
+        end)
+    end
+    if Config.UseTarget then return end
+    while true do
+        local sleep = 1000
+        if isLoggedIn then
+            if currentArea ~= 0 then
+                sleep = 0
+                if IsControlJustPressed(0, 51) then -- E
+                    takeCoral(currentArea)
+                    exports['qb-core']:KeyPressed()
+                    Wait(500)
+                    exports['qb-core']:HideText()
+                    sleep = 3000
+                end
+            end
+
+            if inSellerZone then
+                sleep = 0
+                if IsControlJustPressed(0, 51) then -- E
+                    sellCoral()
+                    exports['qb-core']:KeyPressed()
+                    Wait(500)
+                    exports['qb-core']:HideText()
+                    sleep = 3000
+                end
+            end
+        end
+        Wait(sleep)
     end
 end)
