@@ -8,7 +8,7 @@ local function getItemPrice(amount, price)
     for k, v in pairs(Config.PriceModifiers) do
         local modifier = #Config.PriceModifiers == k and amount >= v.minAmount or amount >= v.minAmount and amount <= v.maxAmount
         if modifier then
-            price = 100 * math.random(v.minPercentage, v.maxPercentage)
+            price /= 100 * math.random(v.minPercentage, v.maxPercentage)
             price = math.ceil(price)
         end
     end
