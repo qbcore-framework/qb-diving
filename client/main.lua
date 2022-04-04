@@ -290,12 +290,10 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool, oxygenAvailable)
                         currentGear.enabled = true
                         ClearPedTasks(ped)
                         QBCore.Functions.Notify('/divingsuit to take off your diving suit', 'success')
-                        print("put on")
                         Citizen.CreateThread(function()
                             while currentGear.enabled do
                                 if IsPedSwimmingUnderWater(PlayerPedId()) then
                                     currentGear.oxygen = currentGear.oxygen-1
-                                    print('oxy', currentGear.oxygen)
                                     if currentGear.oxygen == 60 then
                                         QBCore.Functions.Notify('You have less than 1 minute of air remaining', 'error')
                                     elseif currentGear.oxygen == 0 then
@@ -324,7 +322,6 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool, oxygenAvailable)
                 SetEnableScuba(ped, false)
                 SetPedMaxTimeUnderwater(ped, 1.00)
                 currentGear.enabled = false
-                print(json.encode(currentGear))
                 TriggerServerEvent('qb-diving:server:GiveBackGear', currentGear.oxygen)
                 ClearPedTasks(ped)
                 deleteGear()
