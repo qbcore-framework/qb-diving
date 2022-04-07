@@ -51,6 +51,8 @@ local function gearAnim()
 end
 
 local function takeCoral(coral)
+    if ConfigDiving.CoralLocations[currentDivingLocation.area].coords.Coral[coral].PickedUp then return end
+	
     local ped = PlayerPedId()
     local times = math.random(2, 5)
     if math.random() > Config.CopsChance then callCops() end
@@ -220,7 +222,7 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
 end)
 
 RegisterNetEvent('qb-diving:client:NewLocations', function()
-    QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(Config, area)
+    QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
         Config.CoralLocations = config
         setDivingLocation(area)
     end)
