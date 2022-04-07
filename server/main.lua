@@ -95,7 +95,7 @@ RegisterNetEvent('qb-diving:server:TakeCoral', function(area, coral, bool)
         Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
         Config.CoralLocations[area].TotalCoral = Config.CoralLocations[area].TotalCoral - 1
     end
-    TriggerClientEvent('qb-diving:server:UpdateCoral', -1, area, coral, bool)
+    TriggerClientEvent('qb-diving:client:UpdateCoral', -1, area, coral, bool)
 end)
 
 RegisterNetEvent('qb-diving:server:RemoveGear', function()
