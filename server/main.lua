@@ -31,10 +31,10 @@ RegisterNetEvent('qb-diving:server:CallCops', function(coords)
     for _, Player in pairs(QBCore.Functions.GetQBPlayers()) do
         if Player then
             if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
-                local msg = "This coral may be stolen"
+                local msg = Lang:t("info.cop_msg")
                 TriggerClientEvent('qb-diving:client:CallCops', Player.PlayerData.source, coords, msg)
                 local alertData = {
-                    title = "Illegal diving",
+                    title = Lang:t("info.cop_title"),
                     coords = coords,
                     description = msg
                 }
@@ -58,7 +58,7 @@ RegisterNetEvent('qb-diving:server:SellCoral', function()
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "remove")
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, 'You don\'t have any coral to sell..', 'error')
+        TriggerClientEvent('QBCore:Notify', src, Lang:t("error.no_coral"), 'error')
     end
 end)
 
@@ -95,7 +95,7 @@ RegisterNetEvent('qb-diving:server:TakeCoral', function(area, coral, bool)
         Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
         Config.CoralLocations[area].TotalCoral = Config.CoralLocations[area].TotalCoral - 1
     end
-    TriggerClientEvent('qb-diving:server:UpdateCoral', -1, area, coral, bool)
+    TriggerClientEvent('qb-diving:client:UpdateCoral', -1, area, coral, bool)
 end)
 
 RegisterNetEvent('qb-diving:server:RemoveGear', function()
@@ -145,6 +145,6 @@ end)
 
 -- Commands
 
-QBCore.Commands.Add("divingsuit", "Take off your diving suit", {}, false, function(source)
+QBCore.Commands.Add("divingsuit", Lang:t("info.command_diving"), {}, false, function(source)
     TriggerClientEvent("qb-diving:client:UseGear", source, false)
 end)
