@@ -51,7 +51,7 @@ local function gearAnim()
 end
 
 local function takeCoral(coral)
-    if ConfigDiving.CoralLocations[currentDivingLocation.area].coords.Coral[coral].PickedUp then return end
+    if Config.CoralLocations[currentDivingLocation.area].coords.Coral[coral].PickedUp then return end
 	
     local ped = PlayerPedId()
     local times = math.random(2, 5)
