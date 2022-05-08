@@ -18,7 +18,7 @@ end
 local function hasCoral(src)
     local Player = QBCore.Functions.GetPlayer(src)
     availableCoral = {}
-    for k, v in pairs(Config.CoralTypes) do
+    for _, v in pairs(Config.CoralTypes) do
         local item = Player.Functions.GetItemByName(v.item)
         if item then availableCoral[#availableCoral+1] = v end
     end

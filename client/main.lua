@@ -268,7 +268,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
             while not HasModelLoaded(tankModel) do
                 Wait(0)
             end
-            TankObject = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+            local TankObject = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
             local bone1 = GetPedBoneIndex(ped, 24818)
             AttachEntityToEntity(TankObject, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
             currentGear.tank = TankObject
@@ -276,7 +276,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
             while not HasModelLoaded(maskModel) do
                 Wait(0)
             end
-            MaskObject = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+            local MaskObject = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
             local bone2 = GetPedBoneIndex(ped, 12844)
             AttachEntityToEntity(MaskObject, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
             currentGear.mask = MaskObject
