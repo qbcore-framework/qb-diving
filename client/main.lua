@@ -322,7 +322,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
             gearAnim()
             QBCore.Functions.Progressbar("remove_gear", Lang:t("info.pullout_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
                 SetEnableScuba(ped, false)
-                SetPedMaxTimeUnderwater(ped, 1.00)
+                SetPedMaxTimeUnderwater(ped, 50.00)
                 currentGear.enabled = false
                 TriggerServerEvent('qb-diving:server:GiveBackGear', currentGear.oxygen)
                 ClearPedTasks(ped)
