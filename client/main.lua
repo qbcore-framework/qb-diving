@@ -274,19 +274,17 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
                         while not HasModelLoaded(tankModel) do
                             Wait(0)
                         end
-                        TankObject = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                        currentGear.tank = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
                         local bone1 = GetPedBoneIndex(ped, 24818)
-                        AttachEntityToEntity(TankObject, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-                        currentGear.tank = TankObject
+                        AttachEntityToEntity(currentGear.tank, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
                         currentGear.oxygen = oxygen
                         RequestModel(maskModel)
                         while not HasModelLoaded(maskModel) do
                             Wait(0)
                         end
-                        MaskObject = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                        currentGear.mask = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
                         local bone2 = GetPedBoneIndex(ped, 12844)
-                        AttachEntityToEntity(MaskObject, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-                        currentGear.mask = MaskObject
+                        AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
                         SetEnableScuba(ped, true)
                         SetPedMaxTimeUnderwater(ped, 2000.00)
                         currentGear.enabled = true
