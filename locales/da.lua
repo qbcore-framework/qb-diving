@@ -5,6 +5,7 @@ local Translations = {
         ["take_off"] = "/divingsuit for at tage din dykkerdragt af",
         ["not_wearing"] = "Du har ikke dykkerudstyr på ..",
         ["no_coral"] = "Du har ingen koraller du kan sælge..",
+        ["not_standing_up"] = "Du skal stå op for at tage dykkerudstyret på",
     },
     success = {
         ["took_out"] = "Du tog din våddragt af",
@@ -24,7 +25,10 @@ local Translations = {
         ["cop_title"] = "Ulovlig dykning",
         ["command_diving"] = "Tag din dykkerdragt af",
     },
-    warning = {},
+    warning = {
+        ["oxygen_one_minute"] = "Du har mindre end 1 minuts luft tilbage",
+        ["oxygen_running_out"] = " Du er ved at løbe tør for luft",
+    },
 }
 Lang = Locale:new({
     phrases = Translations,
