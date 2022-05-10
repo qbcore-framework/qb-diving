@@ -123,7 +123,10 @@ end)
 
 QBCore.Functions.CreateCallback('qb-diving:server:RemoveGear', function(src, cb)
     local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then cb(false) end
+    if not Player then
+        cb(false)
+        return
+    end
     local divingGear = Player.Functions.GetItemByName("diving_gear")
     if divingGear.amount > 0 then
         local oxygen = 200
@@ -133,6 +136,7 @@ QBCore.Functions.CreateCallback('qb-diving:server:RemoveGear', function(src, cb)
         Player.Functions.RemoveItem("diving_gear", 1)
         TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "remove")
         cb(true, oxygen)
+        return
     end
     cb(false, 0)
 end)
