@@ -106,18 +106,35 @@ RegisterNetEvent('qb-diving:server:RemoveGear', function()
     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "remove")
 end)
 
-RegisterNetEvent('qb-diving:server:GiveBackGear', function()
+RegisterNetEvent('qb-diving:server:GiveBackGear', function(oxygen)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return end
-    Player.Functions.AddItem("diving_gear", 1)
-    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "add")
+    if oxygen > 0 then
+        Player.Functions.AddItem("diving_gear", 1, false, {['oxygen']=oxygen})
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "add")
+    end
 end)
 
 -- Callbacks
 
 QBCore.Functions.CreateCallback('qb-diving:server:GetDivingConfig', function(_, cb)
     cb(Config.CoralLocations, currentDivingArea)
+end)
+
+QBCore.Functions.CreateCallback('qb-diving:server:RemoveGear', function(src, cb)
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then cb(false) end
+    local divingGear = Player.Functions.GetItemByName("diving_gear")
+    if divingGear.amount > 0 then
+        local oxygen = 200
+        if divingGear.info.oxygen ~= nil then
+            oxygen = divingGear.info.oxygen
+        end
+        Player.Functions.RemoveItem("diving_gear", 1)
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "remove")
+        cb(true, oxygen)
+    end
+    cb(false, 0)
 end)
 
 -- Items

@@ -5,6 +5,7 @@ local Translations = {
         ["take_off"] = "dalış kıyafetini çıkarmak için /divingsuit yaz",
         ["not_wearing"] = "Dalış teçhizatı takmıyorsun..",
         ["no_coral"] = "Satacak mercanınız yok..",
+        ["not_standing_up"] = "Dalış teçhizatını takmak için ayağa kalkman gerekiyor",
     },
     success = {
         ["took_out"] = "Dalgıç giysini çıkardın",
@@ -24,7 +25,10 @@ local Translations = {
         ["cop_title"] = "Yasadışı dalış",
         ["command_diving"] = "Dalış elbiseni çıkar",
     },
-    warning = {},
+    warning = {
+        ["oxygen_one_minute"] = "1 dakikadan az havanız kaldı",
+        ["oxygen_running_out"] = "Dalış teçhizatınızın havası bitiyor",
+    },
 }
 Lang = Locale:new({
     phrases = Translations,

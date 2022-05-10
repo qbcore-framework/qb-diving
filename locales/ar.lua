@@ -5,6 +5,7 @@ local Translations = {
         ["take_off"] = "/divingsuit لنزع بدلة الغوص الخاصة بك",
         ["not_wearing"] = "أنت لا ترتدي معدات الغوص",
         ["no_coral"] = "ليس لديك أي مرجان للبيع",
+        ["not_standing_up"] = "الوقوف لاستخدام خزان الأكسجين",
     },
     success = {
         ["took_out"] = "جاري اخد لباس الغوض",
@@ -24,7 +25,10 @@ local Translations = {
         ["cop_title"] = "الغوص غير القانوني",
         ["command_diving"] = "خلع بدلة الغوص الخاصة بك",
     },
-    warning = {},
+    warning = {
+        ["oxygen_one_minute"] = "لديك أقل من ستين ثانية متبقية",
+        ["oxygen_running_out"] = "الأكسجين ينفد منك",
+    },
 }
 Lang = Locale:new({
     phrases = Translations,

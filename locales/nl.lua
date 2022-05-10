@@ -5,6 +5,7 @@ local Translations = {
         ["take_off"] = "/divingsuit om je duikpak uit te doen",
         ["not_wearing"] = "Je hebt geen duikuitrusting aan..",
         ["no_coral"] = "Je hebt geen koraal om te verkopen..",
+        ["not_standing_up"] = "Je moet rechtop staan ​​om de duikuitrusting aan te trekken",
     },
     success = {
         ["took_out"] = "Je hebt je wetsuit uitgedaan",
@@ -24,7 +25,10 @@ local Translations = {
         ["cop_title"] = "Illegaal duiken",
         ["command_diving"] = "Doe je duikpak uit",
     },
-    warning = {},
+    warning = {
+        ["oxygen_one_minute"] = "Je hebt minder dan 1 minuut lucht over",
+        ["oxygen_running_out"] = "Je duikuitrusting heeft bijna geen lucht meer",
+    },
 }
 Lang = Locale:new({
     phrases = Translations,
