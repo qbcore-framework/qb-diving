@@ -123,7 +123,7 @@ end)
 
 QBCore.Functions.CreateCallback('qb-diving:server:RemoveGear', function(src, cb)
     local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then 
+    if not Player then
         cb(false)
         return
     end
