@@ -275,6 +275,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
                             Wait(0)
                         end
                         currentGear.tank = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+			SetEntityCollision(currentGear.tank, false, false)
                         local bone1 = GetPedBoneIndex(ped, 24818)
                         AttachEntityToEntity(currentGear.tank, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
                         currentGear.oxygen = oxygen
@@ -283,6 +284,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
                             Wait(0)
                         end
                         currentGear.mask = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+			SetEntityCollision(currentGear.mask, false, false)
                         local bone2 = GetPedBoneIndex(ped, 12844)
                         AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
                         SetEnableScuba(ped, true)
