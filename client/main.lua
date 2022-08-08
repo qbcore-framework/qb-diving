@@ -19,6 +19,16 @@ local currentGear = {
 
 -- Functions
 
+local function createCoral(coords) -- Create coral prop in Box Zone for qb-target interction
+    local coords = coords
+    local propModel = "prop_coral_pillar_01"
+    RequestModel(propModel) while not HasModelLoaded(propModel) do Wait(0) end
+    prop = CreateObject(propModel, coords.x, coords.y, coords.z - 1.5, false)
+    FreezeEntityPosition(prop, true)
+    SetEntityInvincible(prop, true)
+    SetModelAsNoLongerNeeded(propModel)
+end
+
 local function callCops()
     local call = math.random(1, 3)
     local chance = math.random(1, 3)
@@ -111,7 +121,7 @@ local function setDivingLocation(divingLocation)
             exports['qb-target']:AddBoxZone('diving_coral_zone_'..k, v.coords, v.length, v.width, {
                 name = 'diving_coral_zone_'..k,
                 heading = v.heading,
-                debugPoly = false,
+                debugPoly = Config.Debug,
                 minZ = v.coords.z - 3,
                 maxZ = v.coords.z + 2
             }, {
@@ -126,11 +136,12 @@ local function setDivingLocation(divingLocation)
                 },
                 distance = 2.0
             })
+            createCoral(v.coords)
         else
             zones[k] = BoxZone:Create(v.coords, v.length, v.width, {
                 name = 'diving_coral_zone_'..k,
                 heading = v.heading,
-                debugPoly = false,
+                debugPoly = Config.Debug,
                 minZ = v.coords.z - 3,
                 maxZ = v.coords.z + 2
             })
@@ -192,7 +203,7 @@ local function createSeller()
             local zone = BoxZone:Create(current.coords.xyz, current.zoneOptions.length, current.zoneOptions.width, {
                 name = 'diving_coral_seller_'..i,
                 heading = current.coords.w,
-                debugPoly = false,
+                debugPoly = Config.Debug,
                 minZ = current.coords.z - 1.5,
                 maxZ = current.coords.z + 1.5
             })
@@ -235,7 +246,7 @@ RegisterNetEvent('qb-diving:client:UpdateCoral', function(area, coral, bool)
     Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
 end)
 
-RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
+RegisterNetEvent('qb-diving:client:CallCops', function(coords, msg)
     PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
     TriggerEvent("chatMessage", Lang:t("error.911_chatmessage"), "error", msg)
     local transG = 100
@@ -275,6 +286,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
                             Wait(0)
                         end
                         currentGear.tank = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                        SetEntityCollision(currentGear.tank, false, false)
                         local bone1 = GetPedBoneIndex(ped, 24818)
                         AttachEntityToEntity(currentGear.tank, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
                         currentGear.oxygen = oxygen
@@ -283,28 +295,34 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
                             Wait(0)
                         end
                         currentGear.mask = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                        SetEntityCollision(currentGear.mask, false, false)
                         local bone2 = GetPedBoneIndex(ped, 12844)
                         AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
                         SetEnableScuba(ped, true)
-                        SetPedMaxTimeUnderwater(ped, 2000.00)
+                        SetPedMaxTimeUnderwater(ped, oxygen)
                         currentGear.enabled = true
                         ClearPedTasks(ped)
-                        TriggerEvent('chatMessage', "SYSTEM", "error", Lang:t("error.take_off"))
+                        QBCore.Functions.Notify(Lang:t("error.take_off"), 'error', 5000)
                         Citizen.CreateThread(function()
                             while currentGear.enabled do
                                 if IsPedSwimmingUnderWater(PlayerPedId()) then
                                     currentGear.oxygen = currentGear.oxygen-1
-                                    if currentGear.oxygen == 60 then
+                                    if currentGear.oxygen == 300 then
+                                        QBCore.Functions.Notify(Lang:t("warning.oxygen_five_minutes"), 'error')
+                                    elseif currentGear.oxygen == 60 then
                                         QBCore.Functions.Notify(Lang:t("warning.oxygen_one_minute"), 'error')
                                     elseif currentGear.oxygen == 0 then
                                         QBCore.Functions.Notify(Lang:t("warning.oxygen_running_out"), 'error')
-                                        SetPedMaxTimeUnderwater(ped, 50.00)
-                                    elseif currentGear.oxygen == -40 then
+                                        SetPedMaxTimeUnderwater(ped, 30.0)
+                                    elseif currentGear.oxygen == -30 then
                                         deleteGear()
                                         SetEnableScuba(ped, false)
                                         SetPedMaxTimeUnderwater(ped, 1.00)
                                         currentGear.enabled = false
                                     end
+                                    exports['qb-core']:DrawText("Oxygen Tank - Time Remaining: " .. currentGear.oxygen .. " seconds.", "left")
+                                else
+                                    exports['qb-core']:HideText()
                                 end
                                 Wait(1000)
                             end
@@ -320,7 +338,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
             gearAnim()
             QBCore.Functions.Progressbar("remove_gear", Lang:t("info.pullout_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
                 SetEnableScuba(ped, false)
-                SetPedMaxTimeUnderwater(ped, 50.00)
+                SetPedMaxTimeUnderwater(ped, 30.0)
                 currentGear.enabled = false
                 TriggerServerEvent('qb-diving:server:GiveBackGear', currentGear.oxygen)
                 ClearPedTasks(ped)

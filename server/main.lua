@@ -8,7 +8,7 @@ local function getItemPrice(amount, price)
     for k, v in pairs(Config.PriceModifiers) do
         local modifier = #Config.PriceModifiers == k and amount >= v.minAmount or amount >= v.minAmount and amount <= v.maxAmount
         if modifier then
-            price /= 100 * math.random(v.minPercentage, v.maxPercentage)
+            price = price * (math.random(v.minPercentage, v.maxPercentage) / 100) 
             price = math.ceil(price)
         end
     end
@@ -51,10 +51,10 @@ RegisterNetEvent('qb-diving:server:SellCoral', function()
     if hasCoral(src) then
         for _, v in pairs(availableCoral) do
             local item = Player.Functions.GetItemByName(v.item)
-            local price = item.amount * v.price
+            local price = v.price
             local reward = getItemPrice(item.amount, price)
             Player.Functions.RemoveItem(item.name, item.amount)
-            Player.Functions.AddMoney('cash', math.ceil(reward / item.amount), "sold-coral")
+            Player.Functions.AddMoney('cash', math.ceil(reward * item.amount), "sold-coral")
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "remove")
         end
     else
@@ -129,7 +129,7 @@ QBCore.Functions.CreateCallback('qb-diving:server:RemoveGear', function(src, cb)
     end
     local divingGear = Player.Functions.GetItemByName("diving_gear")
     if divingGear.amount > 0 then
-        local oxygen = 200
+        local oxygen = 1800.0
         if divingGear.info.oxygen ~= nil then
             oxygen = divingGear.info.oxygen
         end
