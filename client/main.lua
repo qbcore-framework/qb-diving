@@ -20,10 +20,9 @@ local currentGear = {
 -- Functions
 
 local function createCoral(coords) -- Create coral prop in Box Zone for qb-target interction
-    local coords = coords
     local propModel = "prop_coral_pillar_01"
     RequestModel(propModel) while not HasModelLoaded(propModel) do Wait(0) end
-    prop = CreateObject(propModel, coords.x, coords.y, coords.z - 1.5, false)
+    local prop = CreateObject(propModel, coords.x, coords.y, coords.z - 1.5, false)
     FreezeEntityPosition(prop, true)
     SetEntityInvincible(prop, true)
     SetModelAsNoLongerNeeded(propModel)
