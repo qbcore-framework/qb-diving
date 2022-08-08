@@ -386,7 +386,7 @@ Config.PriceModifiers = {
 
 Config.SellLocations = {
     [1] = {
-        coords = vector4(-1214.66, -1498.14, 4.33, 125.68), 
+        coords = vector4(-1214.66, -1498.14, 4.33, 125.68),
         model = 'a_f_y_beach_01',
         zoneOptions = { -- Only used when not using the target
             length = 3,
