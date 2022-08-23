@@ -304,7 +304,7 @@ AddEventHandler('qb-diving:wearsuit', function()
                 ClearPedTasks(ped)
                 QBCore.Functions.Notify(Lang:t("success.took_out"))
                 TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
-                oxygenlevel = oxygenlevel
+                
             end)
        end
 end)
