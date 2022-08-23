@@ -2,7 +2,10 @@ local QBCore = exports['qb-core']:GetCoreObject()
 local isLoggedIn = LocalPlayer.state['isLoggedIn']
 local zones = {}
 local currentArea = 0
+local numridingsuit = 0
+local oxygenlevel = 0
 local inSellerZone = false
+local iswearsuit = false
 local currentDivingLocation = {
     area = 0,
     blip = {
@@ -13,12 +16,9 @@ local currentDivingLocation = {
 local currentGear = {
     mask = 0,
     tank = 0,
-    oxygen = 0,
     enabled = false
 }
-
 -- Functions
-
 local function callCops()
     local call = math.random(1, 3)
     local chance = math.random(1, 3)
@@ -28,7 +28,6 @@ local function callCops()
         TriggerServerEvent('qb-diving:server:CallCops', coords)
     end
 end
-
 local function deleteGear()
 	if currentGear.mask ~= 0 then
         DetachEntity(currentGear.mask, 0, 1)
@@ -41,10 +40,8 @@ local function deleteGear()
         DeleteEntity(currentGear.tank)
 		currentGear.tank = 0
 	end
-
-    currentGear.oxygen = 0
+    oxygenlevel = 0
 end
-
 local function gearAnim()
     RequestAnimDict("clothingshirt")
     while not HasAnimDictLoaded("clothingshirt") do
@@ -52,10 +49,8 @@ local function gearAnim()
     end
 	TaskPlayAnim(PlayerPedId(), "clothingshirt", "try_shirt_positive_d", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
 end
-
 local function takeCoral(coral)
     if Config.CoralLocations[currentDivingLocation.area].coords.Coral[coral].PickedUp then return end
-	
     local ped = PlayerPedId()
     local times = math.random(2, 5)
     if math.random() > Config.CopsChance then callCops() end
@@ -79,7 +74,6 @@ local function takeCoral(coral)
         FreezeEntityPosition(ped, false)
     end)
 end
-
 local function setDivingLocation(divingLocation)
     if currentDivingLocation.area ~= 0 then
         for k in pairs(Config.CoralLocations[currentDivingLocation.area].coords.Coral) do
@@ -146,7 +140,6 @@ local function setDivingLocation(divingLocation)
         end
     end
 end
-
 local function sellCoral()
     local playerPed = PlayerPedId()
     LocalPlayer.state:set("inv_busy", true, true)
@@ -161,7 +154,6 @@ local function sellCoral()
         LocalPlayer.state:set("inv_busy", false, true)
     end)
 end
-
 local function createSeller()
     for i = 1, #Config.SellLocations do
         local current = Config.SellLocations[i]
@@ -208,9 +200,7 @@ local function createSeller()
         end
     end
 end
-
 -- Events
-
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
         Config.CoralLocations = config
@@ -219,22 +209,18 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         isLoggedIn = true
     end)
 end)
-
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     isLoggedIn = false
 end)
-
 RegisterNetEvent('qb-diving:client:NewLocations', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
         Config.CoralLocations = config
         setDivingLocation(area)
     end)
 end)
-
 RegisterNetEvent('qb-diving:client:UpdateCoral', function(area, coral, bool)
     Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
 end)
-
 RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
     PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
     TriggerEvent("chatMessage", Lang:t("error.911_chatmessage"), "error", msg)
@@ -258,80 +244,96 @@ RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
         end
     end
 end)
-
-RegisterNetEvent('qb-diving:client:UseGear', function(bool)
-    local ped = PlayerPedId()
-    if bool then
-        if not IsPedSwimming(ped) and not IsPedInAnyVehicle(ped) then
-            gearAnim()
-            QBCore.Functions.TriggerCallback('qb-diving:server:RemoveGear', function(result, oxygen)
-                if result then
-                    QBCore.Functions.Progressbar("equip_gear", Lang:t("info.put_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
-                        deleteGear()
-                        local maskModel = `p_d_scuba_mask_s`
-                        local tankModel = `p_s_scuba_tank_s`
-                        RequestModel(tankModel)
-                        while not HasModelLoaded(tankModel) do
-                            Wait(0)
-                        end
-                        currentGear.tank = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
-                        local bone1 = GetPedBoneIndex(ped, 24818)
-                        AttachEntityToEntity(currentGear.tank, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-                        currentGear.oxygen = oxygen
-                        RequestModel(maskModel)
-                        while not HasModelLoaded(maskModel) do
-                            Wait(0)
-                        end
-                        currentGear.mask = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
-                        local bone2 = GetPedBoneIndex(ped, 12844)
-                        AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-                        SetEnableScuba(ped, true)
-                        SetPedMaxTimeUnderwater(ped, 2000.00)
-                        currentGear.enabled = true
-                        ClearPedTasks(ped)
-                        TriggerEvent('chatMessage', "SYSTEM", "error", Lang:t("error.take_off"))
-                        Citizen.CreateThread(function()
-                            while currentGear.enabled do
-                                if IsPedSwimmingUnderWater(PlayerPedId()) then
-                                    currentGear.oxygen = currentGear.oxygen-1
-                                    if currentGear.oxygen == 60 then
-                                        QBCore.Functions.Notify(Lang:t("warning.oxygen_one_minute"), 'error')
-                                    elseif currentGear.oxygen == 0 then
-                                        QBCore.Functions.Notify(Lang:t("warning.oxygen_running_out"), 'error')
-                                        SetPedMaxTimeUnderwater(ped, 50.00)
-                                    elseif currentGear.oxygen == -40 then
-                                        deleteGear()
-                                        SetEnableScuba(ped, false)
-                                        SetPedMaxTimeUnderwater(ped, 1.00)
-                                        currentGear.enabled = false
-                                    end
-                                end
-                                Wait(1000)
-                            end
-                        end)
-                    end)
-                end
-            end)
-        else
-            QBCore.Functions.Notify(Lang:t("error.not_standing_up"), 'error')
-        end
+RegisterNetEvent('qb-diving:setgearoxy', function()
+    if oxygenlevel == 0 then
+        oxygenlevel = Config.oxygenlevel
+       QBCore.Functions.Notify('The tube has been filled successfully', 'success') 
     else
-        if currentGear.enabled then
-            gearAnim()
-            QBCore.Functions.Progressbar("remove_gear", Lang:t("info.pullout_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
-                SetEnableScuba(ped, false)
-                SetPedMaxTimeUnderwater(ped, 50.00)
-                currentGear.enabled = false
-                TriggerServerEvent('qb-diving:server:GiveBackGear', currentGear.oxygen)
-                ClearPedTasks(ped)
-                deleteGear()
-                QBCore.Functions.Notify(Lang:t("success.took_out"))
-            end)
-        else
-            QBCore.Functions.Notify(Lang:t("error.not_wearing"), 'error')
-        end
+        QBCore.Functions.Notify('The tube is already full', 'error') 
     end
 end)
+
+RegisterNetEvent('qb-diving:wearsuit')
+AddEventHandler('qb-diving:wearsuit', function()
+	local ChangeClothes = true -- Change this to false if you don't want the mask to appear on the players character
+	local ped = GetPlayerPed(-1)
+		if iswearsuit == false then
+            if oxygenlevel == 0 then
+                TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
+				QBCore.Functions.Notify('You need to fill a tube!')
+            else
+                iswearsuit = true
+                gearAnim()
+                QBCore.Functions.Progressbar("equip_gear", Lang:t("info.put_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
+                    deleteGear()
+                    local maskModel = `p_d_scuba_mask_s`
+                    local tankModel = `p_s_scuba_tank_s`
+                    RequestModel(tankModel)
+                    while not HasModelLoaded(tankModel) do
+                        Wait(0)
+                    end
+                    currentGear.tank = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                    local bone1 = GetPedBoneIndex(ped, 24818)
+                    AttachEntityToEntity(currentGear.tank, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+                    
+                    RequestModel(maskModel)
+                    while not HasModelLoaded(maskModel) do
+                        Wait(0)
+                    end
+                    currentGear.mask = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                    local bone2 = GetPedBoneIndex(ped, 12844)
+                    AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
+                    SetEnableScuba(ped, true)
+                    SetPedMaxTimeUnderwater(ped, 2000.00)
+                    currentGear.enabled = true
+                    ClearPedTasks(ped)
+                    TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                -- TriggerEvent('chatMessage', "SYSTEM", "error", Lang:t("error.take_off"))
+                
+              end)
+          end
+		elseif iswearsuit == true then
+			iswearsuit = false
+            gearAnim()
+            QBCore.Functions.Progressbar("remove_gear", Lang:t("info.pullout_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
+                deleteGear()
+                SetEnableScuba(ped, false)
+                SetPedMaxTimeUnderwater(ped, 1.00)
+                currentGear.enabled = false
+                TriggerServerEvent('qb-diving:server:GiveBackGear')
+                ClearPedTasks(ped)
+                QBCore.Functions.Notify(Lang:t("success.took_out"))
+                TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
+                oxygenlevel = oxygenlevel
+            end)
+       end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(1000)
+       if iswearsuit == true and oxygenlevel >= Config.oxygenlevel then
+            if IsPedSwimmingUnderWater(PlayerPedId()) then
+                oxygenlevel = oxygenlevel - 1
+                if oxygenlevel == 60 then
+                    QBCore.Functions.Notify('You have less than 1 minute of air remaining', 'error')
+                    TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                elseif oxygenlevel == 0 then
+                    QBCore.Functions.Notify('our diving gear is running out of air', 'error')
+                    TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                    SetPedMaxTimeUnderwater(ped, 50.00)
+                elseif oxygenlevel == -40 then
+                    deleteGear()
+                    SetEnableScuba(ped, false)
+                    SetPedMaxTimeUnderwater(ped, 1.00)
+                    iswearsuit = false
+                    TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
+                end
+            end
+            
+        end
+    end
+ end)
 
 -- Threads
 
