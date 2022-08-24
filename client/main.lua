@@ -254,7 +254,7 @@ RegisterNetEvent("qb-diving:client:setoxygenlevel", function()
     end
 end)
 function DrawText2(text)
-	SetTextFont(fontId)
+	SetTextFont(4)
 	SetTextProportional(1)
 	SetTextScale(0.0, 0.45)
 	SetTextDropshadow(1, 0, 0, 0, 255)
@@ -265,7 +265,7 @@ function DrawText2(text)
 	AddTextComponentString(text)
     DrawText(0.45, 0.90)
 end
-RegisterNetEvent('qb-diving:client:UseGear', function(bool)
+RegisterNetEvent('qb-diving:client:UseGear', function()
     local ped = PlayerPedId()
     if iswearingsuit == false then
         if oxgenlevell > 0 then
@@ -301,8 +301,6 @@ RegisterNetEvent('qb-diving:client:UseGear', function(bool)
                                 while currentGear.enabled do
                                     if IsPedSwimmingUnderWater(PlayerPedId()) then
                                         oxgenlevell = oxgenlevell - 1
-                                        local playerCoords = GetEntityCoords(PlayerPedId())
-                                        local headingplayer = GetEntityHeading(PlayerPedId())
                                     if oxgenlevell == 90 then
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif oxgenlevell == 80 then
@@ -397,8 +395,6 @@ Citizen.CreateThread(function()
         Citizen.Wait(0)
       if currentGear.enabled == true and iswearingsuit == true then
         if IsPedSwimmingUnderWater(PlayerPedId()) then
-            local playerCoords = GetEntityCoords(PlayerPedId())
-            local headingplayer = GetEntityHeading(PlayerPedId())
              DrawText2(oxgenlevell..'⏱')
         end
      end
