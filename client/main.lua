@@ -19,7 +19,7 @@ local currentGear = {
     oxygen = 0,
     enabled = false
 }
-currentGear.oxygen = 0
+
 -- Functions
 local function callCops()
     local call = math.random(1, 3)
@@ -41,7 +41,7 @@ local function deleteGear()
         DeleteEntity(currentGear.tank)
 		currentGear.tank = 0
 	end
-    currentGear.oxygen = 0
+    
 end
 local function gearAnim()
     RequestAnimDict("clothingshirt")
@@ -246,11 +246,11 @@ RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
     end
 end)
 RegisterNetEvent("qb-diving:client:setoxygenlevel", function()
-    if currentGear.oxygen == 0 then
+    if oxgenlevell == 0 then
        oxgenlevell = 100 -- oxygenlevel
        QBCore.Functions.Notify('The tube has been filled successfully', 'success')
     else
-        QBCore.Functions.Notify('the gear level is'..' '..currentGear.oxygen..' '..'must be 0%', 'error')
+        QBCore.Functions.Notify('the gear level is'..' '..oxgenlevell..' '..'must be 0%', 'error')
     end
 end)
 function DrawText2(text)
@@ -320,7 +320,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                     elseif oxgenlevell == 10 then
                                             TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif oxgenlevell == 0 then
-                                            deleteGear()
+                                         --   deleteGear()
                                             SetEnableScuba(ped, false)
                                             SetPedMaxTimeUnderwater(ped, 1.00)
                                             currentGear.enabled = false
