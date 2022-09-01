@@ -6,12 +6,12 @@ local Translations = {
         ["not_wearing"] = "Vous n'êtes pas en plonge",
         ["no_coral"] = "Vous n'avez pas de corail à vendre",
         ["not_standing_up"] = "Vous devez être debout pour vous equiper",
-        ["need_otube"] = "Vous avez besoin d'un résérvoir d'oxygène",
-        ["oxygenlevel"] = 'the gear level is %{oxygenlevel} must be 0%'
+        ["need_otube"] = "Vous avez besoin d'une bouteille d'oxygène",
+        ["oxygenlevel"] = "Le niveau d'oxygène est %{oxygenlevel}, Il doit être à 0%"
     },
     success = {
         ["took_out"] = "Vous avez enlevé votre kit de plongée",
-        ["tube_filled"] = "Le résérvoir à été rempli"
+        ["tube_filled"] = "La Bouteille à été rempli"
     },
     info = {
         ["collecting_coral"] = "Vous récupérez des coraux",
