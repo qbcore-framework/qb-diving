@@ -390,13 +390,16 @@ CreateThread(function()
         Wait(sleep)
     end
 end)
-Citizen.CreateThread(function()
+
+CreateThread(function()
     while true do
-        Citizen.Wait(0)
-      if currentGear.enabled == true and iswearingsuit == true then
-        if IsPedSwimmingUnderWater(PlayerPedId()) then
-             DrawText2(oxgenlevell..'⏱')
+    Wait(1000)
+        if currentGear.enabled == true and iswearingsuit == true then
+            if IsPedSwimmingUnderWater(PlayerPedId()) then
+                exports['qb-core']:DrawText(oxgenlevell..' ⏱', 'right')
+            else
+                exports['qb-core']:HideText()
+            end
         end
-     end
     end
 end)
