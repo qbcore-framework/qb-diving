@@ -201,6 +201,29 @@ local function createSeller()
         end
     end
 end
+
+local function formatNumber(number)
+    local s = tostring(number);
+    if s.length == 1 then
+        s = '0' + s;
+    end
+    return s;
+end
+
+local function formatSeconds(seconds)
+    secondsRemaining = seconds
+    minutesRemaining = secondsRemaining % (60 * 60)
+
+    hourMinutesRemaining = math.floor(minutesRemaining / 60)
+    minuteSecondsRemaining = minutesRemaining % 60
+    hourSecondsRemaining = math.ceil(minuteSecondsRemaining)
+
+    fMins = formatNumber(hourMinutesRemaining)
+    fSecs = formatNumber(hourSecondsRemaining)
+
+    return fMins .. ' Min, ' .. fSecs .. ' Sec'
+end
+
 -- Events
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
@@ -253,18 +276,7 @@ RegisterNetEvent("qb-diving:client:setoxygenlevel", function()
         QBCore.Functions.Notify('the gear level is'..' '..oxgenlevell..' '..'must be 0%', 'error')
     end
 end)
-function DrawText2(text)
-	SetTextFont(4)
-	SetTextProportional(1)
-	SetTextScale(0.0, 0.45)
-	SetTextDropshadow(1, 0, 0, 0, 255)
-	SetTextEdge(1, 0, 0, 0, 255)
-	SetTextDropShadow()
-	SetTextOutline()
-	SetTextEntry("STRING")
-	AddTextComponentString(text)
-    DrawText(0.45, 0.90)
-end
+
 RegisterNetEvent('qb-diving:client:UseGear', function()
     local ped = PlayerPedId()
     if iswearingsuit == false then
@@ -396,10 +408,12 @@ CreateThread(function()
     Wait(1000)
         if currentGear.enabled == true and iswearingsuit == true then
             if IsPedSwimmingUnderWater(PlayerPedId()) then
-                exports['qb-core']:DrawText(oxgenlevell..' ⏱', 'right')
+                exports['qb-core']:DrawText(formatSeconds(oxgenlevell)..' ⏱', 'right')
             else
                 exports['qb-core']:HideText()
             end
+        elseif currentGear.enabled == false and iswearingsuit == true then
+            exports['qb-core']:HideText()
         end
     end
 end)
