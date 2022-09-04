@@ -211,15 +211,15 @@ local function formatNumber(number)
 end
 
 local function formatSeconds(seconds)
-    secondsRemaining = seconds
-    minutesRemaining = secondsRemaining % (60 * 60)
+    local secondsRemaining = seconds
+    local minutesRemaining = secondsRemaining % (60 * 60)
 
-    hourMinutesRemaining = math.floor(minutesRemaining / 60)
-    minuteSecondsRemaining = minutesRemaining % 60
-    hourSecondsRemaining = math.ceil(minuteSecondsRemaining)
+    local hourMinutesRemaining = math.floor(minutesRemaining / 60)
+    local minuteSecondsRemaining = minutesRemaining % 60
+    local hourSecondsRemaining = math.ceil(minuteSecondsRemaining)
 
-    fMins = formatNumber(hourMinutesRemaining)
-    fSecs = formatNumber(hourSecondsRemaining)
+    local fMins = formatNumber(hourMinutesRemaining)
+    local fSecs = formatNumber(hourSecondsRemaining)
 
     return fMins .. ' Min, ' .. fSecs .. ' Sec'
 end
