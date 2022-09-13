@@ -101,8 +101,12 @@ end)
 QBCore.Functions.CreateUseableItem("diving_fill", function(source)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
+    TriggerClientEvent("qb-diving:client:setoxygenlevel", source) 
+end)
+RegisterNetEvent('qb-diving:removeitemafterfill', function()
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
     Player.Functions.RemoveItem("diving_fill", 1)
-    TriggerClientEvent("qb-diving:client:setoxygenlevel", source)
     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_fill"], "remove")
-    
 end)
