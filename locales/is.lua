@@ -30,7 +30,11 @@ local Translations = {
         ["oxygen_running_out"] = "Köfunarbúnaðurinn þinn er að verða uppiskroppa með loftið",
     },
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+
+if GetConvar('qb_locale', 'en') == 'is' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end

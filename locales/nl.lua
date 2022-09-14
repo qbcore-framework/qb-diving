@@ -30,7 +30,11 @@ local Translations = {
         ["oxygen_running_out"] = "Je duikuitrusting heeft bijna geen lucht meer",
     },
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+
+if GetConvar('qb_locale', 'en') == 'nl' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end

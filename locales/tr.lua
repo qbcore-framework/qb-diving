@@ -30,7 +30,11 @@ local Translations = {
         ["oxygen_running_out"] = "Dalış teçhizatınızın havası bitiyor",
     },
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+
+if GetConvar('qb_locale', 'en') == 'tr' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end
