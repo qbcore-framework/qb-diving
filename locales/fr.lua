@@ -33,7 +33,11 @@ local Translations = {
         ["oxygen_running_out"] = "Vous n'avez plus d'oxygène",
     },
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+
+if GetConvar('qb_locale', 'en') == 'fr' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end
