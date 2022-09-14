@@ -31,8 +31,7 @@ RegisterNetEvent('qb-diving:server:CallCops', function(coords)
                 local alertData = {
                     title = Lang:t("info.cop_title"),
                     coords = coords,
-                    description = msg
-                }
+                    description = msg}
                 TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
             end
         end
@@ -104,5 +103,4 @@ QBCore.Functions.CreateUseableItem("diving_fill", function(source)
     Player.Functions.RemoveItem("diving_fill", 1)
     TriggerClientEvent("qb-diving:client:setoxygenlevel", source)
     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_fill"], "remove")
-    
 end)
