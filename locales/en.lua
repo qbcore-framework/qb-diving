@@ -30,7 +30,8 @@ local Translations = {
         ["oxygen_running_out"] = "Your diving gear is running out of air",
     },
 }
-Lang = Locale:new({
+
+Lang = Lang or Locale:new({
     phrases = Translations,
     warnOnMissing = true
 })
