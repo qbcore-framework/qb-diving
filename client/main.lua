@@ -222,7 +222,7 @@ end)
 RegisterNetEvent('qb-diving:client:UpdateCoral', function(area, coral, bool)
     Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
 end)
-RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
+RegisterNetEvent('qb-diving:client:CallCops', function(coords, msg)
     PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
     TriggerEvent("chatMessage", Lang:t("error.911_chatmessage"), "error", msg)
     local transG = 100
