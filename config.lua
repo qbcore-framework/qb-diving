@@ -1,8 +1,6 @@
 Config = Config or {}
-
 Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target interactions (don't change this, go to your server.cfg and add `setr UseTarget true` to use this and just that from true to false or the other way around)
 Config.CopsChance = 0.5 -- The chance of the cops getting called when a coral gets picked up, this ranges from 0.0 to 1.0
-
 Config.CoralLocations = {
     [1] = {
         label = "This is Location 1",
@@ -263,7 +261,6 @@ Config.CoralTypes = {
         price = math.random(50, 70),
     }
 }
-
 Config.PriceModifiers = {
     [1] = {
         minAmount = 5,
@@ -283,7 +280,6 @@ Config.PriceModifiers = {
         maxPercentage = 55
     }
 }
-
 Config.SellLocations = {
     [1] = {
         coords = vector4(-1684.13, -1068.91, 13.15, 100.0),
