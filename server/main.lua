@@ -90,6 +90,12 @@ RegisterNetEvent('qb-diving:server:TakeCoral', function(area, coral, bool)
     end
     TriggerClientEvent('qb-diving:client:UpdateCoral', -1, area, coral, bool)
 end)
+RegisterNetEvent('qb-diving:server:removeItemAfterFill', function()
+   local src = source
+   local Player = QBCore.Functions.GetPlayer(src)
+   Player.Functions.RemoveItem("diving_fill", 1)
+   TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_fill"], "remove")
+end)
 -- Callbacks
 QBCore.Functions.CreateCallback('qb-diving:server:GetDivingConfig', function(_, cb)
     cb(Config.CoralLocations, currentDivingArea)
@@ -99,10 +105,5 @@ QBCore.Functions.CreateUseableItem("diving_gear", function(source)
     TriggerClientEvent("qb-diving:client:UseGear", source)
 end)
 QBCore.Functions.CreateUseableItem("diving_fill", function(source)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    Player.Functions.RemoveItem("diving_fill", 1)
     TriggerClientEvent("qb-diving:client:setoxygenlevel", source)
-    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_fill"], "remove")
-    
 end)
