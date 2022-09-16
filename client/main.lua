@@ -249,6 +249,7 @@ RegisterNetEvent("qb-diving:client:setoxygenlevel", function()
     if oxgenlevell == 0 then
        oxgenlevell = 100 -- oxygenlevel
        QBCore.Functions.Notify('The tube has been filled successfully', 'success')
+       TriggerServerEvent('qb-diving:server:removeItemAfterFill')
     else
         QBCore.Functions.Notify('the gear level is'..' '..oxgenlevell..' '..'must be 0%', 'error')
     end
