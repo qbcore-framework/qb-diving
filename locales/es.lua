@@ -5,6 +5,7 @@ local Translations = {
         ["take_off"] = "/divingsuit para quitarte tu traje de buceo",
         ["not_wearing"] = "No estás usando equipo de buceo..",
         ["no_coral"] = "No tienes ningún coral para vender..",
+        ["not_standing_up"] = "Tienes que estar de pie para ponerte el equipo de buceo",
     },
     success = {
         ["took_out"] = "Te quitaste tu traje de neopreno",
@@ -24,7 +25,10 @@ local Translations = {
         ["cop_title"] = "Buceo ilegal",
         ["command_diving"] = "Quitarse equipo de buceo",
     },
-    warning = {},
+    warning = {
+        ["oxygen_one_minute"] = "Le queda menos de 1 minuto de aire",
+        ["oxygen_running_out"] = "Su equipo de buceo se está quedando sin aire",
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'es' then
