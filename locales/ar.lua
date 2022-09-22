@@ -9,10 +9,11 @@ local Translations = {
     },
     success = {
         ["took_out"] = "جاري اخد لباس الغوض",
+        ["tube_filled"] = "تم تعبئه الأنبوبه بنجاح"
     },
     info = {
         ["collecting_coral"] = "جمع المرجان",
-        ["diving_area"] = "ﺹﻮﻐﻟﺍ ﺔﻘﻄﻨﻣ", -- you need to add font arabic
+        ["diving_area"] = '<FONT FACE="A9eelsh">ﺹﻮﻐﻟﺍ ﺔﻘﻄﻨﻣ', -- download font arabic from here https://github.com/ahmed608/FontArabic
         ["collect_coral"] = "جمع المرجان",
         ["collect_coral_dt"] = "[E] - جمع المرجان",
         ["checking_pockets"] = "فحص الحقيبة لبيع المرجان",
