@@ -30,7 +30,7 @@ end
 RegisterNetEvent('qb-diving:server:CallCops', function(coords)
     for _, Player in pairs(QBCore.Functions.GetQBPlayers()) do
         if Player then
-            if Player.PlayerData.job.type == "leo" and Player.PlayerData.job.onduty then
+            if Player.PlayerData.job.type == "police" and Player.PlayerData.job.onduty then
                 local msg = Lang:t("info.cop_msg")
                 TriggerClientEvent('qb-diving:client:CallCops', Player.PlayerData.source, coords, msg)
                 local alertData = {
