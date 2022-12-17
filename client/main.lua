@@ -41,7 +41,7 @@ local function deleteGear()
         DeleteEntity(currentGear.tank)
 		currentGear.tank = 0
 	end
-    
+
 end
 local function gearAnim()
     RequestAnimDict("clothingshirt")
@@ -141,6 +141,7 @@ local function setDivingLocation(divingLocation)
         end
     end
 end
+
 local function sellCoral()
     local playerPed = PlayerPedId()
     LocalPlayer.state:set("inv_busy", true, true)
@@ -155,6 +156,7 @@ local function sellCoral()
         LocalPlayer.state:set("inv_busy", false, true)
     end)
 end
+
 local function createSeller()
     for i = 1, #Config.SellLocations do
         local current = Config.SellLocations[i]
@@ -201,7 +203,9 @@ local function createSeller()
         end
     end
 end
+
 -- Events
+
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
         Config.CoralLocations = config
@@ -210,19 +214,23 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         isLoggedIn = true
     end)
 end)
+
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     isLoggedIn = false
 end)
+
 RegisterNetEvent('qb-diving:client:NewLocations', function()
     QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
         Config.CoralLocations = config
         setDivingLocation(area)
     end)
 end)
+
 RegisterNetEvent('qb-diving:client:UpdateCoral', function(area, coral, bool)
     Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
 end)
-RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
+
+RegisterNetEvent('qb-diving:client:CallCops', function(coords, msg)
     PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
     TriggerEvent("chatMessage", Lang:t("error.911_chatmessage"), "error", msg)
     local transG = 100
@@ -245,12 +253,14 @@ RegisterNetEvent('qb-diving:server:CallCops', function(coords, msg)
         end
     end
 end)
+
 RegisterNetEvent("qb-diving:client:setoxygenlevel", function()
     if oxgenlevell == 0 then
-       oxgenlevell = 100 -- oxygenlevel
-       QBCore.Functions.Notify('The tube has been filled successfully', 'success')
+       oxgenlevell = Config.oxygenlevel -- oxygenlevel
+       QBCore.Functions.Notify(Lang:t("success.tube_filled"), 'success')
+       TriggerServerEvent('qb-diving:server:removeItemAfterFill')
     else
-        QBCore.Functions.Notify('the gear level is'..' '..oxgenlevell..' '..'must be 0%', 'error')
+        QBCore.Functions.Notify(Lang:t("error.oxygenlevel", {oxygenlevel = oxgenlevell}), 'error')
     end
 end)
 function DrawText2(text)
@@ -265,6 +275,7 @@ function DrawText2(text)
 	AddTextComponentString(text)
     DrawText(0.45, 0.90)
 end
+
 RegisterNetEvent('qb-diving:client:UseGear', function()
     local ped = PlayerPedId()
     if iswearingsuit == false then
@@ -272,35 +283,38 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
             iswearingsuit = true
             if not IsPedSwimming(ped) and not IsPedInAnyVehicle(ped) then
                 gearAnim()
-                        QBCore.Functions.Progressbar("equip_gear", Lang:t("info.put_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
-                            deleteGear()
-                            local maskModel = `p_d_scuba_mask_s`
-                            local tankModel = `p_s_scuba_tank_s`
-                            RequestModel(tankModel)
-                            while not HasModelLoaded(tankModel) do
-                                Wait(0)
-                            end
-                            currentGear.tank = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
-                            local bone1 = GetPedBoneIndex(ped, 24818)
-                            AttachEntityToEntity(currentGear.tank, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-                            
-                            RequestModel(maskModel)
-                            while not HasModelLoaded(maskModel) do
-                                Wait(0)
-                            end
-                            currentGear.mask = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
-                            local bone2 = GetPedBoneIndex(ped, 12844)
-                            AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2, 1)
-                            SetEnableScuba(ped, true)
-                            SetPedMaxTimeUnderwater(ped, 2000.00)
-                            currentGear.enabled = true
-                            ClearPedTasks(ped)
-                            TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
-                            oxgenlevell = oxgenlevell
-                            Citizen.CreateThread(function()
-                                while currentGear.enabled do
-                                    if IsPedSwimmingUnderWater(PlayerPedId()) then
-                                        oxgenlevell = oxgenlevell - 1
+                QBCore.Functions.Progressbar("equip_gear", Lang:t("info.put_suit"), 5000, false, true, {}, {}, {}, {},
+                    function() -- Done
+                        deleteGear()
+                        local maskModel = `p_d_scuba_mask_s`
+                        local tankModel = `p_s_scuba_tank_s`
+                        RequestModel(tankModel)
+                        while not HasModelLoaded(tankModel) do
+                            Wait(0)
+                        end
+                        currentGear.tank = CreateObject(tankModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                        local bone1 = GetPedBoneIndex(ped, 24818)
+                        AttachEntityToEntity(currentGear.tank, ped, bone1, -0.25, -0.25, 0.0, 180.0, 90.0, 0.0, 1, 1, 0,
+                            0, 2, 1)
+
+                        RequestModel(maskModel)
+                        while not HasModelLoaded(maskModel) do
+                            Wait(0)
+                        end
+                        currentGear.mask = CreateObject(maskModel, 1.0, 1.0, 1.0, 1, 1, 0)
+                        local bone2 = GetPedBoneIndex(ped, 12844)
+                        AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2
+                            , 1)
+                        SetEnableScuba(ped, true)
+                        SetPedMaxTimeUnderwater(ped, 2000.00)
+                        currentGear.enabled = true
+                        ClearPedTasks(ped)
+                        TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                        oxgenlevell = oxgenlevell
+                        Citizen.CreateThread(function()
+                            while currentGear.enabled do
+                                if IsPedSwimmingUnderWater(PlayerPedId()) then
+                                    oxgenlevell = oxgenlevell - 1
                                     if oxgenlevell == 90 then
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif oxgenlevell == 80 then
@@ -314,46 +328,49 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                     elseif oxgenlevell == 40 then
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif oxgenlevell == 30 then
-                                            TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                                        TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif oxgenlevell == 20 then
-                                            TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                                        TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif oxgenlevell == 10 then
-                                            TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                                        TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif oxgenlevell == 0 then
-                                         --   deleteGear()
-                                            SetEnableScuba(ped, false)
-                                            SetPedMaxTimeUnderwater(ped, 1.00)
-                                            currentGear.enabled = false
-                                            iswearingsuit = false
-                                            TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
-                                        end
+                                        --   deleteGear()
+                                        SetEnableScuba(ped, false)
+                                        SetPedMaxTimeUnderwater(ped, 1.00)
+                                        currentGear.enabled = false
+                                        iswearingsuit = false
+                                        TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
                                     end
-                                    Wait(1000)
                                 end
-                            end)
+                                Wait(1000)
+                            end
                         end)
-                    else
-                    QBCore.Functions.Notify(Lang:t("error.not_standing_up"), 'error')
-                end
+                    end)
             else
-                QBCore.Functions.Notify('you need oxygen tube', 'error')
+                QBCore.Functions.Notify(Lang:t("error.not_standing_up"), 'error')
             end
+        else
+            QBCore.Functions.Notify(Lang:t("error.need_otube"), 'error')
+        end
     elseif iswearingsuit == true then
-                gearAnim()
-                QBCore.Functions.Progressbar("remove_gear", Lang:t("info.pullout_suit"), 5000, false, true, {}, {}, {}, {}, function() -- Done
-                    SetEnableScuba(ped, false)
-                    SetPedMaxTimeUnderwater(ped, 50.00)
-                    currentGear.enabled = false
-                    ClearPedTasks(ped)
-                    deleteGear()
-                    QBCore.Functions.Notify(Lang:t("success.took_out"))
-                    TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
-                    iswearingsuit = false
-                    oxgenlevell = oxgenlevell
-                end)
+        gearAnim()
+        QBCore.Functions.Progressbar("remove_gear", Lang:t("info.pullout_suit"), 5000, false, true, {}, {}, {}, {},
+            function() -- Done
+                SetEnableScuba(ped, false)
+                SetPedMaxTimeUnderwater(ped, 50.00)
+                currentGear.enabled = false
+                ClearPedTasks(ped)
+                deleteGear()
+                QBCore.Functions.Notify(Lang:t("success.took_out"))
+                TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
+                iswearingsuit = false
+                oxgenlevell = oxgenlevell
+            end)
     end
 end)
+
 -- Threads
+
 CreateThread(function()
     if isLoggedIn then
         QBCore.Functions.TriggerCallback('qb-diving:server:GetDivingConfig', function(config, area)
@@ -376,6 +393,7 @@ CreateThread(function()
                     sleep = 3000
                 end
             end
+
             if inSellerZone then
                 sleep = 0
                 if IsControlJustPressed(0, 51) then -- E
@@ -390,9 +408,10 @@ CreateThread(function()
         Wait(sleep)
     end
 end)
-Citizen.CreateThread(function()
+
+CreateThread(function()
     while true do
-        Citizen.Wait(0)
+        Wait(0)
       if currentGear.enabled == true and iswearingsuit == true then
         if IsPedSwimmingUnderWater(PlayerPedId()) then
              DrawText2(oxgenlevell..'⏱')
