@@ -164,12 +164,11 @@ local function setDivingLocation(divingLocation)
         useZ = true,
     })
     local combo_coral = ComboZone:Create({CircleZone}, {name="combo_coral", debugPoly=false})
-    combo_coral:onPlayerInOut(function(isPointInside, point, zone)
+    combo_coral:onPlayerInOut(function(isPointInside)
         if isPointInside then
-            local set = false
             while isPointInside do
                 local coords = GetEntityCoords(PlayerPedId())
-                for k,v in pairs(Coral) do
+                for _,v in pairs(Coral) do
                     local loc = GetEntityCoords(v)
                     if #(loc - coords) < 25 then
                         SetEntityDrawOutline(v, true)
@@ -182,7 +181,7 @@ local function setDivingLocation(divingLocation)
                 Wait(1000)
             end
         else
-            for k,v in pairs(Coral) do
+            for _,v in pairs(Coral) do
                 SetEntityDrawOutline(v, false)
             end
         end
