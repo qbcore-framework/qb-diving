@@ -7,6 +7,7 @@ local iswearingsuit = false
 local oxgenlevell = 0
 local Coral = {}
 local CoralProp = `prop_coral_pillar_01`
+local peds = {}
 
 local currentDivingLocation = {
     area = 0,
@@ -212,12 +213,12 @@ local function createSeller()
             Wait(0)
         end
         local currentCoords = vector4(current.coords.x, current.coords.y, current.coords.z - 1, current.coords.w)
-        local ped = CreatePed(0, current.model, currentCoords, false, false)
-        FreezeEntityPosition(ped, true)
-        SetEntityInvincible(ped, true)
-        SetBlockingOfNonTemporaryEvents(ped, true)
+        local peds[i] = CreatePed(0, current.model, currentCoords, false, false)
+        FreezeEntityPosition(peds[i], true)
+        SetEntityInvincible(peds[i], true)
+        SetBlockingOfNonTemporaryEvents(peds[i], true)
         if Config.UseTarget then
-            exports['qb-target']:AddTargetEntity(ped, {
+            exports['qb-target']:AddTargetEntity(peds[i], {
                 options = {
                     {
                         label = Lang:t("info.sell_coral"),
