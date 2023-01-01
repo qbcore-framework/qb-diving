@@ -213,7 +213,7 @@ local function createSeller()
             Wait(0)
         end
         local currentCoords = vector4(current.coords.x, current.coords.y, current.coords.z - 1, current.coords.w)
-        local peds[i] = CreatePed(0, current.model, currentCoords, false, false)
+        peds[i] = CreatePed(0, current.model, currentCoords, false, false)
         FreezeEntityPosition(peds[i], true)
         SetEntityInvincible(peds[i], true)
         SetBlockingOfNonTemporaryEvents(peds[i], true)
