@@ -5,6 +5,9 @@ local currentArea = 0
 local inSellerZone = false
 local iswearingsuit = false
 local oxgenlevell = 0
+local Coral = {}
+local CoralProp = `prop_coral_pillar_01`
+local peds = {}
 
 local currentDivingLocation = {
     area = 0,
@@ -21,6 +24,15 @@ local currentGear = {
 }
 
 -- Functions
+
+function loadCoral()
+    RequestModel(CoralProp)
+    while not HasModelLoaded(CoralProp) do
+        RequestModel(CoralProp)
+        Wait(0)
+    end
+end
+
 local function callCops()
     local call = math.random(1, 3)
     local chance = math.random(1, 3)
@@ -33,12 +45,12 @@ end
 local function deleteGear()
 	if currentGear.mask ~= 0 then
         DetachEntity(currentGear.mask, 0, 1)
-        DeleteEntity(currentGear.mask)
+        DeleteObject(currentGear.mask)
 		currentGear.mask = 0
     end
 	if currentGear.tank ~= 0 then
         DetachEntity(currentGear.tank, 0, 1)
-        DeleteEntity(currentGear.tank)
+        DeleteObject(currentGear.tank)
 		currentGear.tank = 0
 	end
 
@@ -69,6 +81,8 @@ local function takeCoral(coral)
         Config.CoralLocations[currentDivingLocation.area].coords.Coral[coral].PickedUp = true
         TriggerServerEvent('qb-diving:server:TakeCoral', currentDivingLocation.area, coral, true)
         ClearPedTasks(ped)
+        SetEntityDrawOutline(Coral[coral], false)
+        DeleteObject(Coral[coral])
         FreezeEntityPosition(ped, false)
     end, function() -- Cancel
         ClearPedTasks(ped)
@@ -77,6 +91,7 @@ local function takeCoral(coral)
 end
 local function setDivingLocation(divingLocation)
     if currentDivingLocation.area ~= 0 then
+        exports['qb-target']:RemoveZone('coral_zone')
         for k in pairs(Config.CoralLocations[currentDivingLocation.area].coords.Coral) do
             if Config.UseTarget then
                 exports['qb-target']:RemoveZone(k)
@@ -102,6 +117,10 @@ local function setDivingLocation(divingLocation)
     EndTextCommandSetBlipName(labelBlip)
     currentDivingLocation.blip.label = labelBlip
     for k, v in pairs(Config.CoralLocations[currentDivingLocation.area].coords.Coral) do
+        loadCoral()
+        Coral[k] = CreateObject(CoralProp, v.coords.x, v.coords.y, v.coords.z+0.5, false, false, false)
+        PlaceObjectOnGroundProperly(Coral[k])
+        FreezeEntityPosition(Coral[k], true)
         if Config.UseTarget then
             exports['qb-target']:AddBoxZone('diving_coral_zone_'..k, v.coords, v.length, v.width, {
                 name = 'diving_coral_zone_'..k,
@@ -140,6 +159,34 @@ local function setDivingLocation(divingLocation)
             end)
         end
     end
+    local CircleZone = CircleZone:Create(Config.CoralLocations[currentDivingLocation.area].coords.Area, 100.0, {
+        name="coral_zone",
+        debugPoly=false,
+        useZ = true,
+    })
+    local combo_coral = ComboZone:Create({CircleZone}, {name="combo_coral", debugPoly=false})
+    combo_coral:onPlayerInOut(function(isPointInside)
+        if isPointInside then
+            while isPointInside do
+                local coords = GetEntityCoords(PlayerPedId())
+                for _,v in pairs(Coral) do
+                    local loc = GetEntityCoords(v)
+                    if #(loc - coords) < 25 then
+                        SetEntityDrawOutline(v, true)
+                        SetEntityDrawOutlineColor(50, 50, 200, 150)
+                        SetEntityDrawOutlineShader(1)
+                    else
+                        SetEntityDrawOutline(v, false)
+                    end
+                end
+                Wait(1000)
+            end
+        else
+            for _,v in pairs(Coral) do
+                SetEntityDrawOutline(v, false)
+            end
+        end
+    end)
 end
 
 local function sellCoral()
@@ -166,12 +213,12 @@ local function createSeller()
             Wait(0)
         end
         local currentCoords = vector4(current.coords.x, current.coords.y, current.coords.z - 1, current.coords.w)
-        local ped = CreatePed(0, current.model, currentCoords, false, false)
-        FreezeEntityPosition(ped, true)
-        SetEntityInvincible(ped, true)
-        SetBlockingOfNonTemporaryEvents(ped, true)
+        peds[i] = CreatePed(0, current.model, currentCoords, false, false)
+        FreezeEntityPosition(peds[i], true)
+        SetEntityInvincible(peds[i], true)
+        SetBlockingOfNonTemporaryEvents(peds[i], true)
         if Config.UseTarget then
-            exports['qb-target']:AddTargetEntity(ped, {
+            exports['qb-target']:AddTargetEntity(peds[i], {
                 options = {
                     {
                         label = Lang:t("info.sell_coral"),
@@ -414,7 +461,7 @@ CreateThread(function()
         Wait(0)
       if currentGear.enabled == true and iswearingsuit == true then
         if IsPedSwimmingUnderWater(PlayerPedId()) then
-             DrawText2(oxgenlevell..'⏱')
+             DrawText2(oxgenlevell..'?')
         end
      end
     end
