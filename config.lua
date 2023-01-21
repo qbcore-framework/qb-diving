@@ -1,7 +1,7 @@
 Config = Config or {}
 Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target interactions (don't change this, go to your server.cfg and add `setr UseTarget true` to use this and just that from true to false or the other way around)
 Config.CopsChance = 0.5 -- The chance of the cops getting called when a coral gets picked up, this ranges from 0.0 to 1.0
-Config.oxygenlevel = 200 -- this is oxygen level you can change this numper as you like 
+Config.oxygenlevel = 200 -- this is oxygen level you can change this number as you like 
 Config.CoralLocations = {
     [1] = {
         label = "This is Location 1",
@@ -262,23 +262,26 @@ Config.CoralTypes = {
         price = math.random(50, 70),
     }
 }
-Config.PriceModifiers = {
+
+-- Amount is amount of coral being sold to be plaed in a bonus tier. (eg. sell 5-10 coral, placed in tier 1.)
+-- Bonus is min/max percentage bonus paid for coral sales. (eg. Sell 5 coral with 10% bonus | 1 coral = $100 + $10 bonus.)
+Config.BonusTiers = {
     [1] = {
         minAmount = 5,
         maxAmount = 10,
-        minPercentage = 80,
-        maxPercentage = 85
+        minBonus = 5,
+        maxBonus = 10
     },
     [2] = {
         minAmount = 11,
         maxAmount = 15,
-        minPercentage = 70,
-        maxPercentage = 75
+        minBonus = 10,
+        maxBonus = 15
     },
     [3] = {
         minAmount = 16,
-        minPercentage = 50,
-        maxPercentage = 55
+        minBonus = 15,
+        maxBonus = 20
     }
 }
 Config.SellLocations = {
