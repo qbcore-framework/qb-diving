@@ -5,10 +5,12 @@ local availableCoral = {}
 -- Functions
 
 local function getItemPrice(amount, price)
-    for k, v in pairs(Config.PriceModifiers) do
-        local modifier = #Config.PriceModifiers == k and amount >= v.minAmount or amount >= v.minAmount and amount <= v.maxAmount
+    for k, v in pairs(Config.BonusTiers) do
+        local modifier = #Config.BonusTiers == k and amount >= v.minAmount or amount >= v.minAmount and amount <= v.maxAmount
         if modifier then
-            price /= 100 * math.random(v.minPercentage, v.maxPercentage)
+            local percent = math.random(v.minBonus, v.maxBonus) / 100
+            local bonus = price * percent
+            price = price + bonus
             price = math.ceil(price)
         end
     end
@@ -54,7 +56,7 @@ RegisterNetEvent('qb-diving:server:SellCoral', function()
             local price = item.amount * v.price
             local reward = getItemPrice(item.amount, price)
             Player.Functions.RemoveItem(item.name, item.amount)
-            Player.Functions.AddMoney('cash', math.ceil(reward / item.amount), "sold-coral")
+            Player.Functions.AddMoney('cash', reward, "sold-coral")
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "remove")
         end
     else
