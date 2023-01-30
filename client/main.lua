@@ -118,7 +118,7 @@ local function setDivingLocation(divingLocation)
     currentDivingLocation.blip.label = labelBlip
     for k, v in pairs(Config.CoralLocations[currentDivingLocation.area].coords.Coral) do
         loadCoral()
-        Coral[k] = CreateObject(CoralProp, v.coords.x, v.coords.y, v.coords.z+0.5, false, false, false)
+        Coral[k] = CreateObject(CoralProp, v.coords.x, v.coords.y, v.coords.z+0.2, false, false, false)
         PlaceObjectOnGroundProperly(Coral[k])
         FreezeEntityPosition(Coral[k], true)
         if Config.UseTarget then
