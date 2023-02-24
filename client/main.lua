@@ -314,7 +314,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                         Citizen.CreateThread(function()
                             while currentGear.enabled do
                                 if IsPedSwimmingUnderWater(PlayerPedId()) then
-				                    oxgenlevell = oxgenlevell - 1
+                                oxgenlevell = oxgenlevell - 1
                                     if oxgenlevell == 0 then
                                         --   deleteGear()
                                         SetEnableScuba(ped, false)
@@ -323,7 +323,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                         iswearingsuit = false
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
                                     else
-					                    TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
+                                        TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     end
 
                                 end
