@@ -325,7 +325,6 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                     else
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     end
-
                                 end
                                 Wait(1000)
                             end
