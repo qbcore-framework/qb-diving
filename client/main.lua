@@ -164,7 +164,7 @@ local function setDivingLocation(divingLocation)
         debugPoly=false,
         useZ = true,
     })
-    local combo_coral = ComboZone:Create({CircleZone}, {name="combo_coral", debugPoly=false})
+    local combo_coral = ComboZone:Create({CircleZone}, {name = "combo_coral", debugPoly = false})
     combo_coral:onPlayerInOut(function(isPointInside)
         if isPointInside then
             while isPointInside do
