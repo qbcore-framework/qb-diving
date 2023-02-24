@@ -160,8 +160,8 @@ local function setDivingLocation(divingLocation)
         end
     end
     local CircleZone = CircleZone:Create(Config.CoralLocations[currentDivingLocation.area].coords.Area, 100.0, {
-        name="coral_zone",
-        debugPoly=false,
+        name = "coral_zone",
+        debugPoly = false,
         useZ = true,
     })
     local combo_coral = ComboZone:Create({CircleZone}, {name = "combo_coral", debugPoly = false})
