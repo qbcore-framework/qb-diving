@@ -322,7 +322,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                         currentGear.enabled = false
                                         iswearingsuit = false
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
-                                    elseif oxygenlevell % 10 then
+                                    elseif (oxygenlevell % 10) == 0 then
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     end
                                 end
