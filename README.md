@@ -1,6 +1,8 @@
 # qb-diving
 Diving Script For QB-Core
+<br>
 # [VIDEO]
+<br>
 https://youtu.be/pPYsy1tKPVM 
 
 # License

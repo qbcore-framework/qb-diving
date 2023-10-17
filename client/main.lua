@@ -408,8 +408,7 @@ CreateThread(function()
         Wait(sleep)
     end
 end)
-local looptime
-CreateThread(function()
+Citizen.CreateThread(function()
     while true do
       if currentGear.enabled == true and iswearingsuit == true then
         if IsPedSwimmingUnderWater(PlayerPedId()) then
