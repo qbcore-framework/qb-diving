@@ -411,11 +411,17 @@ end)
 
 CreateThread(function()
     while true do
-        Wait(0)
+        
       if currentGear.enabled == true and iswearingsuit == true then
         if IsPedSwimmingUnderWater(PlayerPedId()) then
+             looptime = 0
              DrawText2(oxgenlevell..'⏱')
+	else
+             looptime = 5000
         end
+     else
+             looptime = 5000
      end
+     Wait(looptime)
     end
 end)
