@@ -119,6 +119,12 @@ RegisterNetEvent('qb-diving:server:ScubaItem', function(status)
     end
  end)
 
+-- Commands
+
+QBCore.Commands.Add('removegear', "Remove the fivingplongé", {}, true, function(source, args)
+    TriggerClientEvent("qb-diving:client:UseGearOff", source)
+end)
+
 
 -- Callbacks
 
