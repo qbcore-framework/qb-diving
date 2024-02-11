@@ -22,7 +22,7 @@ local function hasCoral(src)
     availableCoral = {}
     for _, v in pairs(Config.CoralTypes) do
         local item = Player.Functions.GetItemByName(v.item)
-        if item then availableCoral[#availableCoral+1] = v end
+        if item then availableCoral[#availableCoral + 1] = v end
     end
     return next(availableCoral)
 end
@@ -32,15 +32,15 @@ end
 RegisterNetEvent('qb-diving:server:CallCops', function(coords)
     for _, Player in pairs(QBCore.Functions.GetQBPlayers()) do
         if Player then
-            if Player.PlayerData.job.type == "leo" and Player.PlayerData.job.onduty then
-                local msg = Lang:t("info.cop_msg")
+            if Player.PlayerData.job.type == 'leo' and Player.PlayerData.job.onduty then
+                local msg = Lang:t('info.cop_msg')
                 TriggerClientEvent('qb-diving:client:CallCops', Player.PlayerData.source, coords, msg)
                 local alertData = {
-                    title = Lang:t("info.cop_title"),
+                    title = Lang:t('info.cop_title'),
                     coords = coords,
                     description = msg
                 }
-                TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
+                TriggerClientEvent('qb-phone:client:addPoliceAlert', -1, alertData)
             end
         end
     end
@@ -56,11 +56,11 @@ RegisterNetEvent('qb-diving:server:SellCoral', function()
             local price = item.amount * v.price
             local reward = getItemPrice(item.amount, price)
             Player.Functions.RemoveItem(item.name, item.amount)
-            Player.Functions.AddMoney('cash', reward, "sold-coral")
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "remove")
+            Player.Functions.AddMoney('cash', reward, 'sold-coral')
+            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], 'remove')
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, Lang:t("error.no_coral"), 'error')
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.no_coral'), 'error')
     end
 end)
 
@@ -73,13 +73,13 @@ RegisterNetEvent('qb-diving:server:TakeCoral', function(area, coral, bool)
     local ItemData = QBCore.Shared.Items[Config.CoralTypes[coralType].item]
     if amount > 1 then
         for _ = 1, amount, 1 do
-            Player.Functions.AddItem(ItemData["name"], 1)
-            TriggerClientEvent('inventory:client:ItemBox', src, ItemData, "add")
+            Player.Functions.AddItem(ItemData['name'], 1)
+            TriggerClientEvent('inventory:client:ItemBox', src, ItemData, 'add')
             Wait(250)
         end
     else
-        Player.Functions.AddItem(ItemData["name"], amount)
-        TriggerClientEvent('inventory:client:ItemBox', src, ItemData, "add")
+        Player.Functions.AddItem(ItemData['name'], amount)
+        TriggerClientEvent('inventory:client:ItemBox', src, ItemData, 'add')
     end
     if (Config.CoralLocations[area].TotalCoral - 1) == 0 then
         for _, v in pairs(Config.CoralLocations[currentDivingArea].coords.Coral) do
@@ -101,10 +101,10 @@ RegisterNetEvent('qb-diving:server:TakeCoral', function(area, coral, bool)
 end)
 
 RegisterNetEvent('qb-diving:server:removeItemAfterFill', function()
-   local src = source
-   local Player = QBCore.Functions.GetPlayer(src)
-   Player.Functions.RemoveItem("diving_fill", 1)
-   TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_fill"], "remove")
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    Player.Functions.RemoveItem('diving_fill', 1)
+    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['diving_fill'], 'remove')
 end)
 
 -- Callbacks
@@ -115,10 +115,10 @@ end)
 
 -- Items
 
-QBCore.Functions.CreateUseableItem("diving_gear", function(source)
-    TriggerClientEvent("qb-diving:client:UseGear", source)
+QBCore.Functions.CreateUseableItem('diving_gear', function(source)
+    TriggerClientEvent('qb-diving:client:UseGear', source)
 end)
 
-QBCore.Functions.CreateUseableItem("diving_fill", function(source)
-    TriggerClientEvent("qb-diving:client:setoxygenlevel", source)
+QBCore.Functions.CreateUseableItem('diving_fill', function(source)
+    TriggerClientEvent('qb-diving:client:setoxygenlevel', source)
 end)

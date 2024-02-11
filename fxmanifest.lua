@@ -1,7 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
-
-description 'QB-Diving'
+lua54 'yes'
+author 'Kakarot'
+description 'Allows players to dive and search for materials underwater to sell'
 version '1.2.1'
 
 shared_script {
@@ -18,5 +19,3 @@ client_scripts {
     '@PolyZone/BoxZone.lua',
     'client/main.lua'
 }
-
-lua54 'yes'
