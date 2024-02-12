@@ -306,6 +306,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                         AttachEntityToEntity(currentGear.mask, ped, bone2, 0.0, 0.0, 0.0, 180.0, 90.0, 0.0, 1, 1, 0, 0, 2
                             , 1)
                         SetEnableScuba(ped, true)
+			TriggerServerEvent('qb-diving:server:ScubaItem', true)
                         SetPedMaxTimeUnderwater(ped, 2000.00)
                         currentGear.enabled = true
                         ClearPedTasks(ped)
@@ -352,10 +353,15 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
         else
             QBCore.Functions.Notify(Lang:t("error.need_otube"), 'error')
         end
-    elseif iswearingsuit == true then
+    end
+end)
+
+RegisterNetEvent('qb-diving:client:UseGearOff', function()
+    if iswearingsuit == true then
         gearAnim()
         QBCore.Functions.Progressbar("remove_gear", Lang:t("info.pullout_suit"), 5000, false, true, {}, {}, {}, {},
             function() -- Done
+                TriggerServerEvent('qb-diving:server:ScubaItem', false)
                 SetEnableScuba(ped, false)
                 SetPedMaxTimeUnderwater(ped, 50.00)
                 currentGear.enabled = false

@@ -107,6 +107,25 @@ RegisterNetEvent('qb-diving:server:removeItemAfterFill', function()
     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['diving_fill'], 'remove')
 end)
 
+RegisterNetEvent('qb-diving:server:ScubaItem', function(status)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if status then
+        Player.Functions.RemoveItem("diving_gear", 1)
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "remove")
+    else
+        Player.Functions.AddItem("diving_gear", 1)
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["diving_gear"], "remove")
+    end
+ end)
+
+-- Commands
+
+QBCore.Commands.Add('removegear', "Remove the fivingplongé", {}, true, function(source, args)
+    TriggerClientEvent("qb-diving:client:UseGearOff", source)
+end)
+
+
 -- Callbacks
 
 QBCore.Functions.CreateCallback('qb-diving:server:GetDivingConfig', function(_, cb)
