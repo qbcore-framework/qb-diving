@@ -319,7 +319,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                 if IsPedSwimmingUnderWater(PlayerPedId()) then
                                     OxygenLevel = OxygenLevel - 1
 
-                                    if OxygenLevel % 10 == 0 and OxygenLevel <= 90 and OxygenLevel >= 0 then
+                                    if OxygenLevel % 10 == 0 and OxygenLevel <= 90 and OxygenLevel > 0 then
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif OxygenLevel == 0 then
                                         if Config.RemoveDivingGear then deleteGear() end
@@ -328,6 +328,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                         CurrentGear.enabled = false
                                         isWearingSuit = false
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
+                                        return
                                     end
                                 end
                                 Wait(1000)
