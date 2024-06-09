@@ -314,7 +314,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                         ClearPedTasks(ped)
                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                         OxygenLevel = OxygenLevel
-                        Citizen.CreateThread(function()
+                        CreateThread(function()
                             while CurrentGear.enabled do
                                 if IsPedSwimmingUnderWater(PlayerPedId()) then
                                     OxygenLevel = OxygenLevel - 1
@@ -322,7 +322,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                     if OxygenLevel % 10 == 0 and OxygenLevel <= 90 and OxygenLevel >= 0 then
                                         TriggerServerEvent("InteractSound_SV:PlayOnSource", "breathdivingsuit", 0.25)
                                     elseif OxygenLevel == 0 then
-                                        --   deleteGear()
+                                        if Config.RemoveDivingGear then deleteGear() end
                                         SetEnableScuba(ped, false)
                                         SetPedMaxTimeUnderwater(ped, 1.00)
                                         CurrentGear.enabled = false
@@ -401,7 +401,7 @@ end)
 CreateThread(function()
     while true do
         Wait(0)
-        if CurrentGear.enabled == true and isWearingSuit == true then
+        if CurrentGear.enabled == true and isWearingSuit == true and OxygenLevel > 0 then
             if IsPedSwimmingUnderWater(PlayerPedId()) then
                 DrawText2(OxygenLevel..'⏱')
             end
