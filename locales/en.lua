@@ -6,7 +6,7 @@ local Translations = {
         ["not_wearing"] = "You are not wearing a diving gear ..",
         ["no_coral"] = "You don't have any coral to sell..",
         ["not_standing_up"] = "You need to be standing up to put on the diving gear",
-        ["need_otube"] = "you need oxygen tube",
+        ["need_otube"] = "You need an oxygen tube to fill your empty diving gear",
         ["oxygenlevel"] = 'the gear level is %{oxygenlevel} must be 0%'
     },
     success = {
