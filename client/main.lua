@@ -326,8 +326,7 @@ RegisterNetEvent('qb-diving:client:UseGear', function()
                                         SetEnableScuba(ped, false)
                                         SetPedMaxTimeUnderwater(ped, 1.00)
                                         CurrentGear.enabled = false
-                                        isWearingSuit = false
-                                        TriggerServerEvent("InteractSound_SV:PlayOnSource", nil, 0.25)
+                                        isWearingSuit = false                                        
                                         return
                                     end
                                 end
