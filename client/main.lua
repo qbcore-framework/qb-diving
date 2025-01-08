@@ -152,7 +152,7 @@ local function sellCoral()
     TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_STAND_IMPATIENT", 0, true)
     QBCore.Functions.Progressbar("sell_coral_items", Lang:t("info.checking_pockets"), math.random(2000, 4000), false, true, {}, {}, {}, {}, function() -- Done
         ClearPedTasks(playerPed)
-        TriggerServerEvent('qb-diving:server:SellCoral')
+        TriggerServerEvent('qb-diving:server:SellCorals')
         LocalPlayer.state:set("inv_busy", false, true)
     end, function() -- Cancel
         ClearPedTasksImmediately(playerPed)
